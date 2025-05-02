@@ -7,10 +7,12 @@ export class CardiacElectricalCycle {
     /**
      * Creates an instance of CardiacElectricalCycle.
      * @param {string} name - The name of the cardiac electrical cycle.
+     * @param {number} duration - The duration of the cardiac electrical cycle in milliseconds.
      * @param {ElectricalPhase[]} phases - The phases of the cardiac electrical cycle.
      */
-    constructor(name, phases) {
+    constructor(name, duration, phases) {
         this.name = name;
+        this.duration = duration;
         this.phases = phases;
     }
 
@@ -19,6 +21,12 @@ export class CardiacElectricalCycle {
      * @type {string}
      */
     name = '';
+
+    /**
+     * The duration of the cardiac electrical cycle in milliseconds.
+     * @type {number}
+     */
+    duration = 0;
 
     /**
      * The phases of the cardiac electrical cycle.
@@ -77,10 +85,17 @@ export class ElectricalPhase {
     }
 
     /**
+     * The name of the corresponding wave of this electrical phase in Lead II.
+     * @type {string}
+     */
+    waveInLead2 = '';
+
+    /**
      * Calculates the vector from the start point to the end point of the phase.
      * @returns {Vector} The vector representing the direction and magnitude of the phase.
      */
     getVector() {
+        if (!this.endPoint || !this.startPoint) return new Vector(0, 0); 
         return new Vector(this.endPoint.x - this.startPoint.x, this.endPoint.y - this.startPoint.y);
     }
 }

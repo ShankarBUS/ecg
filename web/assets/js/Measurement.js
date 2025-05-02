@@ -1,109 +1,75 @@
-import { CardiacElectricalCycle } from './CardiacCycle.js';
-import { Point } from './Math.js';
+import { drawVectors, setupCanvas } from './Drawing.js';
+import { Vector } from './Math.js';
 
-let heartBounds = null;
-let limbElectrodes = null;
+export class Electrode {
+    constructor(name, x, y) {
+        this.name = name;
+        this.x = x;
+        this.y = y;
+    }
 
-function defineHeartBoundaries() {
-    heartBounds = {
-        left: 4,
-        top: 6,
-        width: 8,
-        height: 12
-    }; // Average heart size in centimeters
+    voltage = 0;
+
+    getVector() {
+        return new Vector(this.x, this.y);
+    }
+
+    getVoltageReadingFrom(vector) {
+        return vector.dot(this.getVector());
+    }
 }
 
+export class Lead {
+    constructor(name, voltage, axis) {
+        this.name = name;
+        this.voltage = voltage;
+        this.axis = axis;
+    }
+}
+
+let limbElectrodes = null;
+
+let heartWidth = 8; // cm
+let heartHeight = 12; // cm
+let electrodeDistance = 24; // cm
+
+// Einthoven's triangle:
+// --------------------
+//        Lead I
+//      (RA)--(LA)
+// Lead II \  / Lead III
+//         (LL)
 function defineLimbElectrodes() {
     limbElectrodes = [
-        { name: 'leftArm', x: 16, y: 0 },
-        { name: 'leftLeg', x: 16, y: 24 },
-        { name: 'rightArm', x: 0, y: 0 },
-        { name: 'rightLeg', x: 0, y: 24 }
+        new Electrode('leftArm', electrodeDistance, 0),
+        new Electrode('rightArm', 0, 0),
+        new Electrode('leftLeg', electrodeDistance / 2, electrodeDistance),
     ];
 }
 
-function calculateLeadVoltages(limbElectrodeVoltages) {
-    const { leftArm, rightArm, leftLeg } = limbElectrodeVoltages;
-
-    return {
-        leadI: leftArm - rightArm,
-        leadII: leftLeg - rightArm,
-        leadIII: leftLeg - leftArm,
-        aVR: rightArm - (leftArm + leftLeg) / 2,
-        aVL: leftArm - (rightArm + leftLeg) / 2,
-        aVF: leftLeg - (leftArm + rightArm) / 2
-    };
+function calculateElectrodeVoltages(vector) {
+    return limbElectrodes.map(electrode => {
+        return electrode.getVoltageReadingFrom(vector);
+    });
 }
 
-async function createHeartAndLimbElectrodes() {
-    defineHeartBoundaries();
+export function calculateLeadVoltages(vector) {
+    const voltages = calculateElectrodeVoltages(vector);
+    const leftArm = voltages[0];
+    const rightArm = voltages[1];
+    const leftLeg = voltages[2];
+
+    return [
+        new Lead('leadI', leftArm - rightArm, 0),
+        new Lead('leadII', leftLeg - rightArm, 60),
+        new Lead('leadIII', leftLeg - leftArm, 120),
+        new Lead('aVR', rightArm - (leftArm + leftLeg) / 2, -150),
+        new Lead('aVL', leftArm - (rightArm + leftLeg) / 2, -30),
+        new Lead('aVF', leftLeg - (leftArm + rightArm) / 2, 90)
+    ];
+}
+
+export function createHeartAndLimbElectrodes() {
     defineLimbElectrodes();
-    let cycle = await CardiacElectricalCycle.getNormalCycle();
-
-    const canvas = document.getElementById('heartCanvas');
-    canvas.width = cm2px(2 * heartBounds.width);
-    canvas.height = cm2px(2 * heartBounds.height);
-    const ctx = canvas.getContext('2d');
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = 'red';
-
-    // Draw the main tilted heart shape
-    ctx.beginPath();
-    ctx.ellipse(
-        cm2px(heartBounds.left + heartBounds.width / 2), cm2px(heartBounds.top + heartBounds.height / 2),
-        cm2px(heartBounds.width / 2), cm2px(heartBounds.height / 2),
-        -Math.PI / 4, 0, Math.PI * 2
-    );
-    ctx.closePath();
-    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    ctx.fill();
-
-    ctx.fillStyle = 'blue';
-    limbElectrodes.forEach(lead => {
-        ctx.beginPath();
-        ctx.arc(cm2px(lead.x), cm2px(lead.y), cm2px(0.5), 0, 2 * Math.PI);
-        ctx.fill();
-    });
-
-    cycle.phases.forEach((phase, index) => {
-        let sp = phase.startPoint;
-        let ep = phase.endPoint;
-
-        if (!sp || !ep) return;
-
-        ctx.fillStyle = "yellow";
-        ctx.beginPath();
-        ctx.arc(cm2px(sp.x), cm2px(sp.y), 5, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.fillStyle = "green";
-        ctx.arc(cm2px(ep.x), cm2px(ep.y), 5, 0, 2 * Math.PI);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(cm2px(sp.x), cm2px(sp.y));
-        ctx.lineTo(cm2px(ep.x), cm2px(ep.y));
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-    });
+    setupCanvas(electrodeDistance, heartHeight, heartWidth, limbElectrodes);
 }
-
-function px2cm(px) {
-    var cpi = 2.54;
-    var dpi = 96;
-    var ppd = window.devicePixelRatio;
-    return (px * cpi / (dpi * ppd)).toFixed(3);
-}
-
-function cm2px(cm) {
-    return cm * 20;
-    // var dpi = 96;
-    // var cpi = 2.54;
-    // var ppd = window.devicePixelRatio;
-    // return Math.round(cm * dpi * ppd / cpi);
-}
-
-export { createHeartAndLimbElectrodes, cm2px, calculateLeadVoltages };

@@ -1,47 +1,54 @@
 {
   "name": "Normal Cardiac Electrical Cycle",
+  "duration": 460,
   "phases": [
     {
       "name": "Atrial Depolarization",
       "startTime": 0,
       "duration": 80,
       "startPoint": { "x": 3.2, "y": 9.3 },
-      "endPoint": { "x": 6.5, "y": 10.3 }
+      "endPoint": { "x": 6.5, "y": 10.3 },
+      "waveInLead2": "P"
     },
     {
       "name": "AV Nodal Delay",
       "startTime": 80,
       "duration": 120,
       "startPoint": null,
-      "endPoint": null
+      "endPoint": null,
+      "waveInLead2": "PR Interval"
     },
     {
       "name": "Septal Depolarization",
       "startTime": 200,
       "duration": 30,
       "startPoint": { "x": 8.5, "y": 11.3 },
-      "endPoint": { "x": 7.8, "y": 11.8 }
+      "endPoint": { "x": 7.8, "y": 11.8 },
+      "waveInLead2": "Q"
     },
     {
       "name": "Ventricular Depolarization",
       "startTime": 230,
       "duration": 50,
       "startPoint": { "x": 9, "y": 12.5 },
-      "endPoint": { "x": 12.2, "y": 16 }
+      "endPoint": { "x": 12.2, "y": 16 },
+      "waveInLead2": "R"
     },
     {
       "name": "Depolarization of Purkinje Fibres",
       "startTime": 280,
       "duration": 20,
       "startPoint": { "x": 7.2, "y": 11 },
-      "endPoint": { "x": 7.8, "y": 9 }
+      "endPoint": { "x": 7.8, "y": 9 },
+      "waveInLead2": "S"
     },
     {
       "name": "Ventricular Repolarization",
       "startTime": 300,
       "duration": 160,
       "startPoint": { "x": 12.2, "y": 16 },
-      "endPoint": { "x": 10.8, "y": 14.5 }
+      "endPoint": { "x": 10.8, "y": 14.5 },
+      "waveInLead2": "T"
     }
   ]
 }

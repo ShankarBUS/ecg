@@ -1,3 +1,5 @@
+import { calculateLeadVoltages } from './Measurement.js';
+
 let ecgData = null;
 let currentPhase = 0;
 let ecgPoints = null;
@@ -8,7 +10,9 @@ const ecgCanvas = document.getElementById('ecgWaveCanvas');
 const ecgPointer = document.getElementById('ecgPointer');
 const ecgContext = ecgCanvas.getContext('2d');
 
-async function setupEcgSlider() {
+let currentCycle = null;
+
+export async function setupEcgSlider(currentCardiacCycle) {
     ecgData = await fetchEcgData();
     const width = ecgCanvas.width = ecgWidth;
     const height = ecgCanvas.height = ecgHeight;
@@ -17,6 +21,7 @@ async function setupEcgSlider() {
     ecgPoints = generateEcgPoints(width, height);
     drawECGWave();
     movePointer();
+    currentCycle = currentCardiacCycle;
     ecgSlider.addEventListener('input', updateEcgPhase);
 }
 
@@ -88,7 +93,7 @@ function getYValueFromSlider(x) {
     if (pointIndex == 0 || ecgPoints[pointIndex].x == x) {
         return ecgPoints[pointIndex].y;
     }
-    
+
     const prevPoint = ecgPoints[pointIndex - 1];
     const nextPoint = ecgPoints[pointIndex];
     const slope = (nextPoint.y - prevPoint.y) / (nextPoint.x - prevPoint.x);
@@ -98,6 +103,16 @@ function getYValueFromSlider(x) {
 function updateEcgPhase() {
     currentPhase = ecgSlider.value;
     movePointer();
+    updateLeads();
 }
 
-export { setupEcgSlider };
+function updateLeads() {
+    const time = currentPhase * currentCycle.duration / 100;
+    let phase = currentCycle.phases.find(phase => phase.startTime <= time && phase.startTime + phase.duration >= time);
+    if (phase)
+    {
+        let vector = phase.getVector();
+        let leads = calculateLeadVoltages(vector);
+        console.log(`Phase: ${phase.name}, Leads: ${leads.map(l => `${l.name} - ${l.voltage.toFixed(2)}`)}}`);
+    }
+}

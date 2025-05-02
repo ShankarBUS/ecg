@@ -1,0 +1,54 @@
+{
+    "waveform": "Lead II Normal Waveform",
+    "waves": [
+        {
+            "name": "P",
+            "duration": 80,
+            "amplitude": 0.25,
+            "type": "smooth",
+            "showName": true
+        },
+        {
+            "name": "PR Segment",
+            "duration": 40,
+            "amplitude": 0.0,
+            "type": "flat",
+            "showName": false
+        },
+        {
+            "name": "Q",
+            "duration": 30,
+            "amplitude": -0.2,
+            "type": "spike",
+            "showName": true
+        },
+        {
+            "name": "R",
+            "duration": 60,
+            "amplitude": 2.0,
+            "type": "spike",
+            "showName": true
+        },
+        {
+            "name": "S",
+            "duration": 30,
+            "amplitude": -0.5,
+            "type": "spike",
+            "showName": true
+        },
+        {
+            "name": "ST Segment",
+            "duration": 150,
+            "amplitude": 0,
+            "type": "flat",
+            "showName": false
+        },
+        {
+            "name": "T",
+            "duration": 160,
+            "amplitude": 0.5,
+            "type": "smooth",
+            "showName": true
+        }
+    ]
+}

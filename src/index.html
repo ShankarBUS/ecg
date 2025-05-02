@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECG Visualization</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>ECG Visualization</h1>
+    </header>
+    <main>
+        <section id="heart-animation">
+            <div id="heart-container">
+                <img id="heart-image" width="80%" height="auto" src="./assets/svgs/heart.svg" />
+                <canvas id="heartCanvas"></canvas>
+            </div>
+        </section>
+        <section id="ecg-slider">
+            <div class="ecg-slider-container">
+                <div id="ecgWaveformDisplay">
+                    <canvas id="ecgWaveCanvas"></canvas>
+                    <div id="ecgPointer"></div>
+                    <input type="range" id="ecgSlider" class="ecg-slider" min="0" max="100" value="0" step="1" />
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="assets/js/script.js" type="module"></script>
+</body>
+</html>

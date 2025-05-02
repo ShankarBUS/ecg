@@ -1,0 +1,47 @@
+{
+  "name": "Normal Cardiac Electrical Cycle",
+  "phases": [
+    {
+      "name": "Atrial Depolarization",
+      "startTime": 0,
+      "duration": 80,
+      "startPoint": { "x": 0, "y": 0 },
+      "endPoint": { "x": 1, "y": 1 }
+    },
+    {
+      "name": "AV Nodal Delay",
+      "startTime": 80,
+      "duration": 120,
+      "startPoint": { "x": 1, "y": 1 },
+      "endPoint": { "x": 1, "y": 1 }
+    },
+    {
+      "name": "Septal Depolarization",
+      "startTime": 200,
+      "duration": 30,
+      "startPoint": { "x": 1, "y": 1 },
+      "endPoint": { "x": 2, "y": 1 }
+    },
+    {
+      "name": "Ventricular Depolarization",
+      "startTime": 230,
+      "duration": 50,
+      "startPoint": { "x": 2, "y": 1 },
+      "endPoint": { "x": 3, "y": 2 }
+    },
+    {
+      "name": "Depolarization of Purkinje Fibres",
+      "startTime": 280,
+      "duration": 20,
+      "startPoint": { "x": 3, "y": 2 },
+      "endPoint": { "x": 4, "y": 2 }
+    },
+    {
+      "name": "Ventricular Repolarization",
+      "startTime": 300,
+      "duration": 160,
+      "startPoint": { "x": 4, "y": 2 },
+      "endPoint": { "x": 3, "y": 1 }
+    }
+  ]
+}

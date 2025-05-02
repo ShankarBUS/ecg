@@ -1,0 +1,61 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+#ecgWaveformDisplay {
+    position: relative;
+}
+
+#ecgWaveCanvas {
+    width: auto;
+    height: auto;
+    display: block;
+}
+
+#ecgPointer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: red;
+}
+
+.ecg-slider {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    outline: none;
+}
+
+.ecg-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 100px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.ecg-slider::-moz-range-thumb {
+    width: 15px;
+    height: 100px;
+    background: transparent;
+    cursor: pointer;
+}

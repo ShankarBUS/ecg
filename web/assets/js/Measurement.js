@@ -1,4 +1,3 @@
-import { drawVectors, setupCanvas } from './Drawing.js';
 import { Vector } from './Math.js';
 
 export class Electrode {
@@ -6,16 +5,18 @@ export class Electrode {
         this.name = name;
         this.x = x;
         this.y = y;
+        this.unitVector = new Vector(x, y).normalize();
     }
 
     voltage = 0;
+    unitVector = null;
 
     getVector() {
-        return new Vector(this.x, this.y);
+        return this.unitVector;
     }
 
     getVoltageReadingFrom(vector) {
-        return vector.dot(this.getVector());
+        return this.getVector().dot(vector);
     }
 }
 
@@ -39,11 +40,11 @@ let electrodeDistance = 24; // cm
 //      (RA)--(LA)
 // Lead II \  / Lead III
 //         (LL)
-function defineLimbElectrodes() {
+export function defineLimbElectrodes() {
     limbElectrodes = [
-        new Electrode('leftArm', electrodeDistance, 0),
+        new Electrode('leftArm', 1, 0),
         new Electrode('rightArm', 0, 0),
-        new Electrode('leftLeg', electrodeDistance / 2, electrodeDistance),
+        new Electrode('leftLeg', 1 / 2, Math.sqrt(3) / 2)
     ];
 }
 
@@ -51,6 +52,13 @@ function calculateElectrodeVoltages(vector) {
     return limbElectrodes.map(electrode => {
         return electrode.getVoltageReadingFrom(vector);
     });
+}
+
+export function calculateLead2Voltage(vector) {
+    const rightArm = limbElectrodes[1].getVoltageReadingFrom(vector);
+    const leftLeg = limbElectrodes[2].getVoltageReadingFrom(vector);
+
+    return leftLeg - rightArm;
 }
 
 export function calculateLeadVoltages(vector) {
@@ -67,9 +75,4 @@ export function calculateLeadVoltages(vector) {
         new Lead('aVL', leftArm - (rightArm + leftLeg) / 2, -30),
         new Lead('aVF', leftLeg - (leftArm + rightArm) / 2, 90)
     ];
-}
-
-export function createHeartAndLimbElectrodes() {
-    defineLimbElectrodes();
-    setupCanvas(electrodeDistance, heartHeight, heartWidth, limbElectrodes);
 }

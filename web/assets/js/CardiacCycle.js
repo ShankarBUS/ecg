@@ -73,8 +73,8 @@ export class ElectricalPhase {
      * @param {string} name - The name of the electrical phase.
      * @param {number} startTime - The start time of the phase in milliseconds.
      * @param {number} duration - The duration of the phase in milliseconds.
-     * @param {Point|null} [startPoint=null] - The starting point of the phase with dimensions in centimeters.
-     * @param {Point|null} [endPoint=null] - The ending point of the phase with dimensions in centimeters.
+     * @param {Point|null} [startPoint=null] - The starting point of the net vector of the phase with dimensions in centimeters.
+     * @param {Point|null} [endPoint=null] - The ending point of the net vector of the phase with dimensions in centimeters.
      */
     constructor(name, startTime, duration, startPoint = null, endPoint = null) {
         this.name = name;
@@ -88,7 +88,13 @@ export class ElectricalPhase {
      * The name of the corresponding wave of this electrical phase in Lead II.
      * @type {string}
      */
-    waveInLead2 = '';
+    nameInLead2 = '';
+
+    /**
+     * The type of the electrical phase (i.e. 'spike' or 'smooth').
+     * @type {string}
+     */
+    type = '';
 
     /**
      * Calculates the vector from the start point to the end point of the phase.

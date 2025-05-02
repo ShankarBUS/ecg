@@ -11,21 +11,19 @@
         <h1>ECG</h1>
     </header>
     <main>
-        <section id="heart">
+        <group id="heart">
             <div class="heart-container">
                 <img class="heart-image" src="./assets/svgs/heart.svg" />
                 <canvas id="heartCanvas"></canvas>
             </div>
-        </section>
-        <section id="ecg-slider">
-            <div class="ecg-slider-container">
-                <div id="ecgWaveformDisplay">
-                    <canvas id="ecgWaveCanvas"></canvas>
-                    <div id="ecgPointer"></div>
-                    <input type="range" id="ecgSlider" class="ecg-slider" min="0" max="100" value="0" step="1" />
-                </div>
+        </group>
+        <group id="ecg-slider">
+            <div id="ecgWaveformDisplay">
+                <canvas id="ecgWaveCanvas"></canvas>
+                <div id="ecgPointer"></div>
+                <input type="range" id="ecgSlider" class="ecg-slider" min="0" max="100" value="0" step="1" />
             </div>
-        </section>
+        </group>
     </main>
     <script src="assets/js/script.js" type="module"></script>
 </body>

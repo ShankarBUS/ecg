@@ -1,6 +1,6 @@
 import { setupEcgSlider } from './Slider.js';
-import { createHeartAndLimbElectrodes } from './Measurement.js';
-import { drawVectors } from './Drawing.js';
+import { defineLimbElectrodes } from './Measurement.js';
+import { drawPhaseVector, setupCanvas } from './Drawing.js';
 import { CardiacElectricalCycle } from './CardiacCycle.js';
 
 let currentCardiacCycle = null;
@@ -9,10 +9,10 @@ let currentCardiacCycle = null;
 async function initApp() {
 
     currentCardiacCycle = await CardiacElectricalCycle.getNormalCycle();
-    // Setup ECG slider
+    defineLimbElectrodes();
     await setupEcgSlider(currentCardiacCycle);
-    createHeartAndLimbElectrodes();
-    drawVectors(currentCardiacCycle);
+    setupCanvas(512);
+    drawPhaseVector(currentCardiacCycle.phases[0], 0);
 }
 
 // Event listener for DOMContentLoaded to ensure the app initializes after the DOM is fully loaded

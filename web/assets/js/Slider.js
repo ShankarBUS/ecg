@@ -1,10 +1,10 @@
-import { calculateLeadVoltages } from './Measurement.js';
+import { calculateLeadVoltages, calculateLead2Voltage } from './Measurement.js';
+import { drawPhaseVector } from './Drawing.js';
 
-let ecgData = null;
 let currentPhase = 0;
 let ecgPoints = null;
 let ecgWidth = 200;
-let ecgHeight = 100;
+let ecgHeight = 200;
 const ecgSlider = document.getElementById('ecgSlider');
 const ecgCanvas = document.getElementById('ecgWaveCanvas');
 const ecgPointer = document.getElementById('ecgPointer');
@@ -13,7 +13,7 @@ const ecgContext = ecgCanvas.getContext('2d');
 let currentCycle = null;
 
 export async function setupEcgSlider(currentCardiacCycle) {
-    ecgData = await fetchEcgData();
+    currentCycle = currentCardiacCycle;
     const width = ecgCanvas.width = ecgWidth;
     const height = ecgCanvas.height = ecgHeight;
     ecgSlider.style.width = `${width}px`;
@@ -21,38 +21,34 @@ export async function setupEcgSlider(currentCardiacCycle) {
     ecgPoints = generateEcgPoints(width, height);
     drawECGWave();
     movePointer();
-    currentCycle = currentCardiacCycle;
     ecgSlider.addEventListener('input', updateEcgPhase);
 }
 
-async function fetchEcgData() {
-    const response = await fetch('./assets/data/lead2Data.json');
-    return response.json();
-}
-
 function generateEcgPoints(width, height) {
-    const waves = ecgData.waves;
-    const totalDuration = waves.reduce((sum, wave) => sum + wave.duration, 0);
-    const scaleX = width / totalDuration;
-    const centerY = height * 0.6;
-    const amplitudeFactor = height / 4;
+    const phases = currentCycle.phases;
+    const scaleX = width / currentCycle.duration;
+    const centerY = height * 0.7;
+    const amplitudeFactor = height / 15;
 
     let currentX = 0;
     const points = [];
 
-    waves.forEach((wave) => {
-        if (wave.type === 'smooth') {
-            for (let x = 0; x < wave.duration * scaleX; x++) {
-                const y = centerY - (wave.amplitude * amplitudeFactor) * Math.sin((Math.PI * x) / (wave.duration * scaleX));
+    phases.forEach((phase) => {
+        currentX = phase.startTime * scaleX;
+        let amplitude = calculateLead2Voltage(phase.getVector()) * amplitudeFactor;
+        let duration = phase.duration * scaleX;
+        if (phase.type === 'smooth') {
+            for (let x = 0; x < duration; x++) {
+                const y = centerY - amplitude * Math.sin((Math.PI * x) / (duration));
                 points.push({ x: currentX + x, y });
             }
-        } else if (wave.type === 'spike') {
-            points.push({ x: currentX + (wave.duration * scaleX) / 2, y: centerY - (wave.amplitude * amplitudeFactor) });
-        } else if (wave.type === 'flat') {
-            points.push({ x: currentX, y: centerY - (wave.amplitude * amplitudeFactor) });
-            points.push({ x: currentX + (wave.duration * scaleX), y: centerY - (wave.amplitude * amplitudeFactor) });
+        } else if (phase.type === 'spike') {
+            points.push({ x: currentX + (duration) / 2, y: centerY - amplitude });
         }
-        currentX += wave.duration * scaleX;
+        else {
+            points.push({ x: currentX, y: centerY });
+            points.push({ x: currentX + duration, y: centerY });
+        }
     });
 
     return points;
@@ -111,8 +107,9 @@ function updateLeads() {
     let phase = currentCycle.phases.find(phase => phase.startTime <= time && phase.startTime + phase.duration >= time);
     if (phase)
     {
-        let vector = phase.getVector();
-        let leads = calculateLeadVoltages(vector);
-        console.log(`Phase: ${phase.name}, Leads: ${leads.map(l => `${l.name} - ${l.voltage.toFixed(2)}`)}}`);
+        drawPhaseVector(phase, time);
+        // let vector = phase.getVector();
+        // let leads = calculateLeadVoltages(vector);
+        // console.log(`Phase: ${phase.name}, Leads: ${leads.map(l => `${l.name} - ${l.voltage.toFixed(2)}`)}}`);
     }
 }

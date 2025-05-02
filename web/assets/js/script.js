@@ -1,5 +1,5 @@
 import { setupEcgSlider } from './ecgSlider.js';
-import { createHeartAndLimbElectrodes } from './ecgMeasurement.js';
+import { createHeartAndLimbElectrodes } from './Measurement.js';
 
 // Function to initialize the application
 async function initApp() {

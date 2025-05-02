@@ -5,43 +5,43 @@
       "name": "Atrial Depolarization",
       "startTime": 0,
       "duration": 80,
-      "startPoint": { "x": 0, "y": 0 },
-      "endPoint": { "x": 1, "y": 1 }
+      "startPoint": { "x": 3.2, "y": 9.3 },
+      "endPoint": { "x": 6.5, "y": 10.3 }
     },
     {
       "name": "AV Nodal Delay",
       "startTime": 80,
       "duration": 120,
-      "startPoint": { "x": 1, "y": 1 },
-      "endPoint": { "x": 1, "y": 1 }
+      "startPoint": null,
+      "endPoint": null
     },
     {
       "name": "Septal Depolarization",
       "startTime": 200,
       "duration": 30,
-      "startPoint": { "x": 1, "y": 1 },
-      "endPoint": { "x": 2, "y": 1 }
+      "startPoint": { "x": 8.5, "y": 11.3 },
+      "endPoint": { "x": 7.8, "y": 11.8 }
     },
     {
       "name": "Ventricular Depolarization",
       "startTime": 230,
       "duration": 50,
-      "startPoint": { "x": 2, "y": 1 },
-      "endPoint": { "x": 3, "y": 2 }
+      "startPoint": { "x": 9, "y": 12.5 },
+      "endPoint": { "x": 12.2, "y": 16 }
     },
     {
       "name": "Depolarization of Purkinje Fibres",
       "startTime": 280,
       "duration": 20,
-      "startPoint": { "x": 3, "y": 2 },
-      "endPoint": { "x": 4, "y": 2 }
+      "startPoint": { "x": 7.2, "y": 11 },
+      "endPoint": { "x": 7.8, "y": 9 }
     },
     {
       "name": "Ventricular Repolarization",
       "startTime": 300,
       "duration": 160,
-      "startPoint": { "x": 4, "y": 2 },
-      "endPoint": { "x": 3, "y": 1 }
+      "startPoint": { "x": 12.2, "y": 16 },
+      "endPoint": { "x": 10.8, "y": 14.5 }
     }
   ]
 }

@@ -1,69 +1,76 @@
 {
   "name": "Normal Cardiac Electrical Cycle",
-  "duration": 550,
+  "duration": 620,
   "phases": [
     {
       "name": "Atrial Depolarization",
       "startTime": 0,
-      "duration": 80,
-      "startPoint": { "x": 4.5, "y": 6.8 },
-      "endPoint": { "x": 6.5, "y": 7.4 },
+      "duration": 110,
+      "startPoint": { "x": 65, "y": 100 },
+      "endPoint": { "x": 130, "y": 120 },
       "nameInLead2": "P Wave",
-      "type": "smooth"
+      "type": "smooth",
+      "multiplier": 0.1
     },
     {
       "name": "AV Nodal Delay",
-      "startTime": 80,
-      "duration": 40,
-      "startPoint": null,
-      "endPoint": null,
-      "nameInLead2": "PR Segmenr",
-      "type": "flat"
+      "startTime": 110,
+      "duration": 90,
+      "startPoint": { "x": 130, "y": 120 },
+      "endPoint": { "x": 130, "y": 120 },
+      "nameInLead2": "PR Segment",
+      "type": "flat",
+      "multiplier": 0
     },
     {
       "name": "Septal Depolarization",
-      "startTime": 120,
+      "startTime": 200,
       "duration": 30,
-      "startPoint": { "x": 9, "y": 8.8 },
-      "endPoint": { "x": 7.4, "y": 8.9 },
+      "startPoint": { "x": 200, "y": 180 },
+      "endPoint": { "x": 170, "y": 170 },
       "nameInLead2": "Q Wave",
-      "type": "spike"
+      "type": "spike",
+      "multiplier": 0.25
     },
     {
       "name": "Ventricular Depolarization",
-      "startTime": 150,
+      "startTime": 230,
       "duration": 60,
-      "startPoint": { "x": 8.8, "y": 9.5 },
-      "endPoint": { "x": 13, "y": 14 },
+      "startPoint": { "x": 180, "y": 170 },
+      "endPoint": { "x": 250, "y": 250 },
       "nameInLead2": "R Wave",
-      "type": "spike"
+      "type": "spike",
+      "multiplier": 1
     },
     {
       "name": "Depolarization of Base of Ventricles",
-      "startTime": 210,
+      "startTime": 290,
       "duration": 30,
-      "startPoint": { "x": 7.7, "y": 8.5 },
-      "endPoint": { "x": 7.7, "y": 6.8 },
+      "startPoint": { "x": 250, "y": 250 },
+      "endPoint": { "x": 260, "y": 180 },
       "nameInLead2": "S Wave",
-      "type": "spike"
+      "type": "spike",
+      "multiplier": 0.5
     },
     {
       "name": "Isoelectric Phase",
-      "startTime": 240,
-      "duration": 150,
+      "startTime": 320,
+      "duration": 100,
       "startPoint": null,
       "endPoint": null,
       "nameInLead2": "ST Segment",
-      "type": "flat"
+      "type": "flat",
+      "multiplier": 0
     },
     {
       "name": "Ventricular Repolarization",
-      "startTime": 390,
-      "duration": 160,
-      "startPoint": { "x": 9.8, "y": 10.5 },
-      "endPoint": { "x": 11, "y": 12 },
+      "startTime": 420,
+      "duration": 200,
+      "startPoint": { "x": 220, "y": 220 },
+      "endPoint": { "x": 250, "y": 250 },
       "nameInLead2": "T Wave",
-      "type": "smooth"
+      "type": "smooth",
+      "multiplier": 0.2
     }
   ]
 }

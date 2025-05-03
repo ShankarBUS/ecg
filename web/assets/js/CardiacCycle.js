@@ -97,11 +97,18 @@ export class ElectricalPhase {
     type = '';
 
     /**
+     * The amplitude multiplier.
+     * @type {number}
+     */
+    multiplier = 1;
+
+    /**
      * Calculates the vector from the start point to the end point of the phase.
      * @returns {Vector} The vector representing the direction and magnitude of the phase.
      */
     getVector() {
-        if (!this.endPoint || !this.startPoint) return new Vector(0, 0); 
-        return new Vector(this.endPoint.x - this.startPoint.x, this.endPoint.y - this.startPoint.y);
+        if (!this.endPoint || !this.startPoint) return new Vector(0, 0);
+        return new Vector(this.endPoint.x - this.startPoint.x, this.endPoint.y - this.startPoint.y)
+            .normalize().multiply(this.multiplier);
     }
 }

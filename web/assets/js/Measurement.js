@@ -30,10 +30,6 @@ export class Lead {
 
 let limbElectrodes = null;
 
-let heartWidth = 8; // cm
-let heartHeight = 12; // cm
-let electrodeDistance = 24; // cm
-
 // Einthoven's triangle:
 // --------------------
 //        Lead I

@@ -1,5 +1,5 @@
-import { calculateLeadVoltages, calculateLead2Voltage } from './Measurement.js';
-import { drawPhaseVector } from './Drawing.js';
+import { calculateLead2Voltage } from './Measurement.js';
+import { drawPhaseVectorInHeart } from './Drawing.js';
 
 let currentPhase = 0;
 let ecgPoints = null;
@@ -27,28 +27,32 @@ export async function setupEcgSlider(currentCardiacCycle) {
 function generateEcgPoints(width, height) {
     const phases = currentCycle.phases;
     const scaleX = width / currentCycle.duration;
-    const centerY = height * 0.7;
-    const amplitudeFactor = height / 15;
+    const centerY = height * 0.6;
+    const amplitudeFactor = height / 2;
 
     let currentX = 0;
+    let prevY = 0;
     const points = [];
 
     phases.forEach((phase) => {
         currentX = phase.startTime * scaleX;
         let amplitude = calculateLead2Voltage(phase.getVector()) * amplitudeFactor;
         let duration = phase.duration * scaleX;
+        let y = centerY - amplitude;
         if (phase.type === 'smooth') {
             for (let x = 0; x < duration; x++) {
-                const y = centerY - amplitude * Math.sin((Math.PI * x) / (duration));
+                y = centerY - amplitude * Math.sin((Math.PI * x) / (duration));
                 points.push({ x: currentX + x, y });
             }
         } else if (phase.type === 'spike') {
-            points.push({ x: currentX + (duration) / 2, y: centerY - amplitude });
+            points.push({ x: currentX + duration, y: y });
         }
         else {
-            points.push({ x: currentX, y: centerY });
-            points.push({ x: currentX + duration, y: centerY });
+            points.push({ x: currentX, y: prevY });
+            points.push({ x: currentX + (duration / 4), y: y });
+            points.push({ x: currentX + duration, y: y });
         }
+        prevY = y;
     });
 
     return points;
@@ -57,7 +61,22 @@ function generateEcgPoints(width, height) {
 function drawECGWave() {
     ecgContext.clearRect(0, 0, ecgCanvas.width, ecgCanvas.height);
     ecgContext.beginPath();
+    ecgContext.lineWidth = 1;
 
+    for (var x = 0; x <= ecgWidth; x += 20) {
+        ecgContext.moveTo(x, 0);
+        ecgContext.lineTo(x, ecgHeight);
+    }
+
+    for (var y = 0; y <= ecgHeight; y += 20) {
+        ecgContext.moveTo(0, y);
+        ecgContext.lineTo(ecgWidth, y);
+    }
+
+    ecgContext.strokeStyle = "rgba(100, 100, 100, 0.5)";
+    ecgContext.stroke();
+
+    ecgContext.beginPath();
     ecgPoints.forEach((point, index) => {
         if (index === 0) {
             ecgContext.moveTo(point.x, point.y);
@@ -105,11 +124,7 @@ function updateEcgPhase() {
 function updateLeads() {
     const time = currentPhase * currentCycle.duration / 100;
     let phase = currentCycle.phases.find(phase => phase.startTime <= time && phase.startTime + phase.duration >= time);
-    if (phase)
-    {
-        drawPhaseVector(phase, time);
-        // let vector = phase.getVector();
-        // let leads = calculateLeadVoltages(vector);
-        // console.log(`Phase: ${phase.name}, Leads: ${leads.map(l => `${l.name} - ${l.voltage.toFixed(2)}`)}}`);
+    if (phase) {
+        drawPhaseVectorInHeart(phase, time);
     }
 }

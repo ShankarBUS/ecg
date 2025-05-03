@@ -14,11 +14,11 @@
     }
 }
 
-.ecg-group {
+.heart-group {
     align-items: center;
 }
 
-.ecg-container {
+.slider-container {
     position: relative;
 }
 
@@ -85,4 +85,8 @@
     width: 320px;
     height: 320px;
     display: block;
+}
+
+.ecg-card {
+    align-items: center;
 }

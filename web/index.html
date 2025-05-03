@@ -18,26 +18,21 @@
             <div></div>
             <div></div>
         </button>
-        <!-- <img src="https://avatars.githubusercontent.com/ShankarBUS" alt="ShankarBUS" class="avatar"> -->
         <label>ECG</label>
-        <!-- <nav id="navBar" class="navbar">
+        <nav id="navBar" class="navbar">
             <ul id="navList" class="navlist">
-                <li><a href="#basic-info">Basic Info</a></li>
-                <li><a href="#education">Education</a></li>
-                <li><a href="#achievements">Achievements</a></li>
-                <li><a href="#socials">Socials</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#github-stats">GitHub Stats</a></li>
-                <li><a href="#renders">Renders</a></li>
+                <li><a href="#heart-visual">Heart Visual</a></li>
+                <li><a href="#leads">Leads</a></li>
             </ul>
-        </nav> -->
+        </nav>
     </header>
     <div id="main">
         <div class="column">
             <div class="group">
-                <h2>Heart</h2>
-                <div class="sub-group ecg-group">
-                    <div class="ecg-container">
+                <h2 id="heart-visual">Heart Visual</h2>
+                <div class="sub-group heart-group">
+                    <p>Drag the ECG Slider.</p>
+                    <div class="slider-container">
                         <canvas id="ecgWaveCanvas" class="ecg-canvas canvas"></canvas>
                         <div id="ecgPointer" class="ecg-pointer"></div>
                         <input type="range" id="ecgSlider" class="ecg-slider" min="0" max="100" value="0" step="1" />
@@ -46,6 +41,14 @@
                         <img id="heartImage" class="heart-image" src="./assets/svgs/heart.svg" />
                         <canvas id="heartCanvas" class="heart-canvas canvas"></canvas>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="column column-2">
+            <div class="group">
+                <h2 id="leads">Leads</h2>
+                <div class="sub-group">
+                    <div id="leadsContainer" class="cards-grid"></div>
                 </div>
             </div>
         </div>

@@ -4,26 +4,24 @@ import { getLimbLead } from './Measurement.js';
 const heartCanvas = document.getElementById('heartCanvas');
 let heartSize = 320; // default heartCanvas size
 let ecgColor = 'red';
-let impulseColor = 'dodgerblue';
-let impulseColor2 = '#1e90ff11';
+let vectorColor = 'dodgerblue';
 let axisColor = 'red';
 let gridColor = 'rgba(100, 100, 100, 0.5)';
 
-function setCanvasDPI(canvas, size, r = 1, set2dTransform = true) {
+export function setCanvasDPI(canvas, width, height, r = 1, set2dTransform = true) {
     const ratio = Math.ceil(window.devicePixelRatio);
-    canvas.width = size * ratio;
-    canvas.height = size * ratio;
-    canvas.style.width = `${size}px`;
-    canvas.style.height = `${size}px`;
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
     if (set2dTransform) {
         canvas.getContext('2d').setTransform(ratio * r, 0, 0, ratio * r, 0, 0);
     }
 }
 
 export function setupHeartCanvas(heartCanvasSize) {
-    heartCanvasSize;
     let ratio = heartCanvasSize / heartSize;
-    setCanvasDPI(heartCanvas, heartCanvasSize, ratio);
+    setCanvasDPI(heartCanvas, heartCanvasSize, heartCanvasSize, ratio);
 }
 
 function drawAxes(ctx, leadIndex) {
@@ -55,40 +53,19 @@ function drawAxes(ctx, leadIndex) {
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.closePath();
-
-    ctx.fillStyle = axisColor;
-    ctx.font = "12px Cascadia Code";
-    ctx.fillText(`${getLimbLead(leadIndex).axis}°`,
-        heartSize - 50, 20);
 }
 
-export function drawPhaseVectorInHeart(phase, time, leadIndex) {
+export function drawPhaseVectorInHeart(phase, leadIndex) {
     const ctx = heartCanvas.getContext('2d');
     ctx.clearRect(0, 0, heartSize, heartSize);
 
     drawAxes(ctx, leadIndex);
 
-    if (!phase.startPoint || !phase.endPoint) return;
-    const t = (time - phase.startTime) / phase.duration;
+    if (!phase.startPoint || !phase.endPoint || phase.type === 'flat') return;
     let sp = phase.startPoint;
     let ep = phase.endPoint;
-    let cep = new Point(
-        sp.x + (ep.x - sp.x) * t,
-        sp.y + (ep.y - sp.y) * t
-    );
 
-    drawArrow(ctx, sp.x, sp.y, ep.x, ep.y, impulseColor, 2);
-
-    const gradient = ctx.createRadialGradient(cep.x, cep.y, 1, cep.x, cep.y, 20);
-
-    gradient.addColorStop(0, impulseColor);
-    gradient.addColorStop(1, impulseColor2);
-
-    ctx.fillStyle = gradient;
-
-    ctx.beginPath();
-    ctx.arc(cep.x, cep.y, 20, 0, 2 * Math.PI);
-    ctx.fill();
+    drawArrow(ctx, sp.x, sp.y, ep.x, ep.y, vectorColor, 2);
 }
 
 export function drawECGWave(ecgCanvas, ecgPoints) {
@@ -156,10 +133,19 @@ function drawArrow(ctx, startX, startY, endX, endY, color, lineWidth) {
     ctx.closePath();
 }
 
+let smallHeart = false;
+
 export function handleWidthChange(width) {
-    if (width < 400) {
-        setupHeartCanvas(200);
-    } else {
+    let handled = false;
+    if (smallHeart && width >= 400) {
         setupHeartCanvas(320);
+        smallHeart = false;
+        handled = true;
     }
+    else if (!smallHeart && width < 400) {
+        setupHeartCanvas(200);
+        smallHeart = true;
+        handled = true;
+    }
+    return handled;
 }

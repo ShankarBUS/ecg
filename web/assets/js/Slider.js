@@ -1,5 +1,6 @@
 import { getLeadPoints } from './Measurement.js';
-import { drawPhaseVectorInHeart, drawECGWave } from './Drawing.js';
+import { setCanvasDPI, drawPhaseVectorInHeart, drawECGWave } from './Drawing.js';
+import { Point } from './Math.js';
 
 let currentPhase = 0;
 let ecgPoints = null;
@@ -8,30 +9,30 @@ const ecgSlider = document.getElementById('ecgSlider');
 const ecgPointer = document.getElementById('ecgPointer');
 const ecgCanvas = document.getElementById('ecgWaveCanvas');
 
+const heartPointer = document.getElementById('heartPointer');
+
 let currentCycle = null;
 
-export function setupEcgSlider(currentCardiacCycle, leadIndex, width, height) {
+export function setupECGSlider(currentCardiacCycle, width, height) {
     currentCycle = currentCardiacCycle;
-    ecgCanvas.width = width;
-    ecgCanvas.height = height;
+    setCanvasDPI(ecgCanvas, width, height);
     ecgSlider.style.width = `${width}px`;
     ecgSlider.style.height = `${height}px`;
     ecgSlider.min = 0;
     ecgSlider.max = currentCycle.duration;
-    currentLead = leadIndex;
-    changeSliderLead(leadIndex);
-    ecgSlider.addEventListener('input', updateEcgPhase);
+    ecgSlider.value = 0;
+    ecgSlider.addEventListener('input', updateECGPhase);
 }
 
 export function changeSliderLead(leadIndex) {
     currentLead = leadIndex;
     ecgPoints = getLeadPoints(leadIndex);
     drawECGWave(ecgCanvas, ecgPoints);
-    movePointer();
+    moveECGPointer();
     updateHeart();
 }
 
-function movePointer() {
+function moveECGPointer() {
     const x = ecgSlider.value / ecgSlider.max * ecgCanvas.width;
     const y = getYValueFromSlider(x);
     ecgPointer.style.left = `${x - 5}px`;
@@ -55,16 +56,35 @@ function getYValueFromSlider(x) {
     return prevPoint.y + slope * (x - prevPoint.x);
 }
 
-function updateEcgPhase() {
+function updateECGPhase() {
     currentPhase = ecgSlider.value;
-    movePointer();
+    moveECGPointer();
     updateHeart();
 }
 
-function updateHeart() {
+export function updateHeart() {
     const time = currentPhase;
     let phase = currentCycle.phases.find(phase => phase.startTime <= time && phase.startTime + phase.duration >= time);
     if (phase) {
-        drawPhaseVectorInHeart(phase, time, currentLead);
+        drawPhaseVectorInHeart(phase, currentLead);
+        moveHeartPointer(phase, time);
     }
+}
+
+function moveHeartPointer(phase, time) {
+    let sp = phase.startPoint;
+    let ep = phase.endPoint;
+    if (!sp || !ep) return;
+    const t = (time - phase.startTime) / phase.duration;
+    let cep = new Point(
+        sp.x + (ep.x - sp.x) * t,
+        sp.y + (ep.y - sp.y) * t
+    );
+
+    let ratio = window.innerWidth >= 400 ? 1 : 0.625;
+    let left = cep.x * ratio ;
+    let top = cep.y * ratio;
+
+    heartPointer.style.left = `${left - 20}px`;
+    heartPointer.style.top = `${top - 20}px`;
 }

@@ -3,6 +3,7 @@ import { handleWidthChange } from './Drawing.js';
 import { CardiacElectricalCycle } from './CardiacCycle.js';
 import { enableStickyHeader, enableHamburgerMenu, setupMessagePopup, showMessagePopup } from 'https://shankarbus.github.io/kaadu-ui/kaadu-ui.js';
 import { setupLeadVisualization } from './LeadVisualization.js';
+import { updateHeart } from './Slider.js';
 
 let currentCardiacCycle = null;
 
@@ -24,7 +25,8 @@ async function initApp() {
             clearTimeout(resizeTimeout);
         }
         resizeTimeout = setTimeout(function () {
-            handleWidthChange(window.innerWidth);
+            const handled = handleWidthChange(window.innerWidth);
+            if (handled) updateHeart();
         }, 200);
     });
 }

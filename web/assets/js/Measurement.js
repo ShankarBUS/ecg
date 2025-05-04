@@ -1,8 +1,10 @@
 import { Vector } from './Math.js';
+import { createLimbElectrodeElement } from './LeadVisualization.js';
 
 export class Electrode {
-    constructor(name, x, y) {
+    constructor(name, shortName, x, y) {
         this.name = name;
+        this.shortName = shortName;
         this.x = x;
         this.y = y;
         this.unitVector = new Vector(x, y).normalize();
@@ -21,10 +23,12 @@ export class Electrode {
 }
 
 export class Lead {
-    constructor(name, index, axis) {
+    constructor(name, index, axis, positiveElectrode = null, negativeElectrodes = null) {
         this.name = name;
         this.index = index;
         this.axis = axis;
+        this.positiveElectrode = positiveElectrode;
+        this.negativeElectrodes = negativeElectrodes;
     }
 
     voltages = [];
@@ -40,21 +44,28 @@ let limbElectrodes = null;
 //         (LL)
 export function defineLimbElectrodes() {
     limbElectrodes = [
-        new Electrode('leftArm', 1, 0),
-        new Electrode('rightArm', 0, 0),
-        new Electrode('leftLeg', 1 / 2, Math.sqrt(3) / 2)
+        new Electrode('Right Arm', 'RA', 0, 0),
+        new Electrode('Left Arm', 'LA', 1, 0),
+        new Electrode('Left Leg', 'LL', 1 / 2, Math.sqrt(3) / 2),
     ];
+    limbElectrodes.forEach((e, i) => {
+        createLimbElectrodeElement(e);
+    });
 }
 
 let allLeads;
 
 export function defineLimbLeads() {
-    const leadI = new Lead('Lead I', 0, 0);
-    const leadII = new Lead('Lead II', 1, 60);
-    const leadIII = new Lead('Lead III', 2, 120);
-    const leadAVR = new Lead('Lead AVR', 3, -150);
-    const leadAVL = new Lead('Lead AVL', 4, -30);
-    const leadAVF = new Lead('Lead AVF', 5, 90);
+    const ra = limbElectrodes[0];
+    const la = limbElectrodes[1];
+    const ll = limbElectrodes[2];
+
+    const leadI = new Lead('Lead I', 0, 0, la, [ra]);
+    const leadII = new Lead('Lead II', 1, 60, ll, [ra]);
+    const leadIII = new Lead('Lead III', 2, 120, ll, [la]);
+    const leadAVR = new Lead('Lead aVR', 3, -150, ra, [la, ll]);
+    const leadAVL = new Lead('Lead aVL', 4, -30, la, [ra, ll]);
+    const leadAVF = new Lead('Lead aVF', 5, 90, ll, [ra, la]);
 
     allLeads = [leadI, leadII, leadIII, leadAVR, leadAVL, leadAVF];
 }
@@ -71,8 +82,8 @@ function calculateElectrodeVoltages(vector) {
 
 export function calculateLeadVoltages(vector) {
     const voltages = calculateElectrodeVoltages(vector);
-    const leftArm = voltages[0];
-    const rightArm = voltages[1];
+    const rightArm = voltages[0];
+    const leftArm = voltages[1];
     const leftLeg = voltages[2];
 
     return [
@@ -113,17 +124,17 @@ export function generateLeadsPoints(currentCardiacCycle, width, height) {
         vLeadAVF.push(voltages[5]);
     });
 
-    let pLeadI = generateEcgPoints(vLeadI, width, height);
-    let pLeadII = generateEcgPoints(vLeadII, width, height);
-    let pLeadIII = generateEcgPoints(vLeadIII, width, height);
-    let pLeadAVR = generateEcgPoints(vLeadAVR, width, height);
-    let pLeadAVL = generateEcgPoints(vLeadAVL, width, height);
-    let pLeadAVF = generateEcgPoints(vLeadAVF, width, height);
+    let pLeadI = generateECGPoints(vLeadI, width, height);
+    let pLeadII = generateECGPoints(vLeadII, width, height);
+    let pLeadIII = generateECGPoints(vLeadIII, width, height);
+    let pLeadAVR = generateECGPoints(vLeadAVR, width, height);
+    let pLeadAVL = generateECGPoints(vLeadAVL, width, height);
+    let pLeadAVF = generateECGPoints(vLeadAVF, width, height);
 
     allPoints = [pLeadI, pLeadII, pLeadIII, pLeadAVR, pLeadAVL, pLeadAVF];
 }
 
-export function generateEcgPoints(lead, width, height) {
+export function generateECGPoints(lead, width, height) {
     const phases = currentCycle.phases;
     const scaleX = width / currentCycle.duration;
     const centerY = height * 0.6;

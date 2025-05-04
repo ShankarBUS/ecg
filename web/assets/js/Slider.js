@@ -16,6 +16,8 @@ export function setupEcgSlider(currentCardiacCycle, leadIndex, width, height) {
     ecgCanvas.height = height;
     ecgSlider.style.width = `${width}px`;
     ecgSlider.style.height = `${height}px`;
+    ecgSlider.min = 0;
+    ecgSlider.max = currentCycle.duration;
     currentLead = leadIndex;
     changeSliderLead(leadIndex);
     ecgSlider.addEventListener('input', updateEcgPhase);
@@ -60,7 +62,7 @@ function updateEcgPhase() {
 }
 
 function updateHeart() {
-    const time = currentPhase * currentCycle.duration / 100;
+    const time = currentPhase;
     let phase = currentCycle.phases.find(phase => phase.startTime <= time && phase.startTime + phase.duration >= time);
     if (phase) {
         drawPhaseVectorInHeart(phase, time, currentLead);

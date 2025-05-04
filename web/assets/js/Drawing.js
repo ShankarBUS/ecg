@@ -9,12 +9,22 @@ let impulseColor2 = '#1e90ff11';
 let axisColor = 'red';
 let gridColor = 'rgba(100, 100, 100, 0.5)';
 
-export function setupHeartCanvas(heartCanvasSize) {
-    heartSize = heartCanvasSize;
-    heartCanvas.width = heartCanvasSize;
-    heartCanvas.height = heartCanvasSize;
+function setCanvasDPI(canvas, size, r = 1, set2dTransform = true) {
+    const ratio = Math.ceil(window.devicePixelRatio);
+    canvas.width = size * ratio;
+    canvas.height = size * ratio;
+    canvas.style.width = `${size}px`;
+    canvas.style.height = `${size}px`;
+    if (set2dTransform) {
+        canvas.getContext('2d').setTransform(ratio * r, 0, 0, ratio * r, 0, 0);
+    }
 }
 
+export function setupHeartCanvas(heartCanvasSize) {
+    heartCanvasSize;
+    let ratio = heartCanvasSize / heartSize;
+    setCanvasDPI(heartCanvas, heartCanvasSize, ratio);
+}
 
 function drawAxes(ctx, leadIndex) {
     // Draw grid
@@ -37,7 +47,7 @@ function drawAxes(ctx, leadIndex) {
     const x = heartSize / 2 + (heartSize / 2 * Math.cos(angle));
     const y = heartSize / 2 + (heartSize / 2 * Math.sin(angle));
     drawArrow(ctx, heartSize / 2, heartSize / 2, x, y, axisColor, 2);
-    
+
     // Draw angle arc and label
     ctx.beginPath();
     ctx.arc(heartSize / 2, heartSize / 2, 10, 0, angle);
@@ -144,4 +154,12 @@ function drawArrow(ctx, startX, startY, endX, endY, color, lineWidth) {
     ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();
+}
+
+export function handleWidthChange(width) {
+    if (width < 400) {
+        setupHeartCanvas(200);
+    } else {
+        setupHeartCanvas(320);
+    }
 }

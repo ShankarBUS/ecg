@@ -1,5 +1,5 @@
 import { defineLimbElectrodes, defineLimbLeads } from './Measurement.js';
-import { setupHeartCanvas } from './Drawing.js';
+import { handleWidthChange } from './Drawing.js';
 import { CardiacElectricalCycle } from './CardiacCycle.js';
 import { enableStickyHeader, enableHamburgerMenu, setupMessagePopup, showMessagePopup } from 'https://shankarbus.github.io/kaadu-ui/kaadu-ui.js';
 import { setupLeadVisualization } from './LeadVisualization.js';
@@ -14,8 +14,19 @@ async function initApp() {
     currentCardiacCycle = await CardiacElectricalCycle.getNormalCycle();
     defineLimbElectrodes();
     defineLimbLeads();
-    setupHeartCanvas(320);
+    handleWidthChange(window.innerWidth);
     setupLeadVisualization(currentCardiacCycle);
+
+    let resizeTimeout;
+
+    window.addEventListener('resize', function () {
+        if (resizeTimeout) {
+            clearTimeout(resizeTimeout);
+        }
+        resizeTimeout = setTimeout(function () {
+            handleWidthChange(window.innerWidth);
+        }, 200);
+    });
 }
 
 document.addEventListener('DOMContentLoaded', initApp);

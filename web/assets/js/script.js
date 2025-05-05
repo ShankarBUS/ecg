@@ -30,7 +30,7 @@ async function initApp() {
     });
 }
 
-const conditionSelect = document.getElementById('conditionSelect');
+const conditionCMB = document.getElementById('conditionCMB');
 
 async function loadConditions() {
     try {
@@ -40,12 +40,12 @@ async function loadConditions() {
             value: condition.id,
             label: condition.name
         }));
-        conditionSelect.loadOptions(options);
+        conditionCMB.loadOptions(options);
 
-        conditionSelect.addEventListener('selectionChanged',
-             () => selectCondition(conditionSelect.selectedItem.value));
-        conditionSelect.setSelectedItem('NRML'); // Set default value to normal
-        selectCondition(conditionSelect.selectedItem.value);
+        conditionCMB.addEventListener('selectionChanged',
+             () => selectCondition(conditionCMB.selectedItem.value));
+        conditionCMB.setSelectedItem('NRML'); // Set default value to normal
+        selectCondition(conditionCMB.selectedItem.value);
     } catch (error) {
         console.error('Error loading conditions:', error);
     }

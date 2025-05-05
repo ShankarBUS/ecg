@@ -134,12 +134,6 @@
     display: block;
 }
 
-@media screen and (max-width: 400px) {
-    .heart-image {
-        width: 200px;
-    }
-}
-
 .heart-pointer {
     position: absolute;
     top: 0;
@@ -149,6 +143,16 @@
     border-radius: 50%;
     background: radial-gradient(circle, #1e90ff 20%, #1e90ff00 60%);
     transition: none;
+}
+
+@media screen and (max-width: 400px) {
+    .heart-image {
+        width: 200px;
+    }
+
+    .heart-pointer {
+        background: radial-gradient(circle, #1e90ff 10%, #1e90ff00 30%);
+    }
 }
 
 .label-cell {

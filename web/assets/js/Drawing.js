@@ -135,14 +135,15 @@ function drawArrow(ctx, startX, startY, endX, endY, color, lineWidth) {
 
 let smallHeart = false;
 
-export function handleWidthChange(width) {
+export function handleWidthChange(width, init = false) {
     let handled = false;
-    if (smallHeart && width >= 400) {
+
+    if ((smallHeart || init) && width >= 400) {
         setupHeartCanvas(320);
         smallHeart = false;
         handled = true;
     }
-    else if (!smallHeart && width < 400) {
+    else if ((!smallHeart || init) && width < 400) {
         setupHeartCanvas(200);
         smallHeart = true;
         handled = true;

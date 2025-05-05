@@ -39,7 +39,7 @@ export class CardiacElectricalCycle {
      * @returns {Promise<CardiacElectricalCycle>} A promise that resolves to the normal cardiac electrical cycle instance.
      */
     static async getNormalCycle() {
-        const response = await fetch('./assets/data/normalCycle.json');
+        const response = await fetch('./assets/data/cycle-NRML.json');
         const json = await response.json();
         return this.fromJson(json);
     }

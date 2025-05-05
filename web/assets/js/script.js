@@ -11,12 +11,11 @@ async function initApp() {
     enableStickyHeader();
     enableHamburgerMenu();
     setupMessagePopup();
-    // showMessagePopup('Welcome to the ECG Simulation! This simulation will help you understand the electrical activity of the heart. Use the controls to navigate through the cardiac cycle phases.');
-    currentCardiacCycle = await CardiacElectricalCycle.getNormalCycle();
+    
     defineLimbElectrodes();
     defineLimbLeads();
-    handleWidthChange(window.innerWidth);
-    setupLeadVisualization(currentCardiacCycle);
+    handleWidthChange(window.innerWidth, true);
+    loadConditions();
 
     let resizeTimeout;
 
@@ -29,6 +28,44 @@ async function initApp() {
             if (handled) updateHeart();
         }, 200);
     });
+}
+
+const conditionSelect = document.getElementById('conditionSelect');
+
+async function loadConditions() {
+    try {
+        const response = await fetch('./assets/data/conditions.json');
+        const data = await response.json();
+        const options = data.conditions.map(condition => ({
+            value: condition.id,
+            label: condition.name
+        }));
+        conditionSelect.loadOptions(options);
+
+        conditionSelect.addEventListener('selectionChanged',
+             () => selectCondition(conditionSelect.selectedItem.value));
+        conditionSelect.setSelectedItem('NRML'); // Set default value to normal
+        selectCondition(conditionSelect.selectedItem.value);
+    } catch (error) {
+        console.error('Error loading conditions:', error);
+    }
+}
+
+async function selectCondition(id) {
+    currentCardiacCycle = await loadCycleFromCondition(id);
+    if (currentCardiacCycle)
+        setupLeadVisualization(currentCardiacCycle);
+}
+
+async function loadCycleFromCondition(id) {
+    try {
+        const response = await fetch(`./assets/data/cycle-${id}.json`);
+        const data = await response.json();
+        return CardiacElectricalCycle.fromJson(data);
+    } catch (error) {
+        console.error('Error loading cycle from condition:', error);
+        return null;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initApp);

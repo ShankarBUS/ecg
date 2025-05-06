@@ -106,12 +106,12 @@ export function getLeadPoints(lead) {
 export function generateLeadsPoints(currentCardiacCycle, width, height) {
     currentCycle = currentCardiacCycle;
     const phases = currentCycle.phases;
-    let vLeadI = allLeads[0].voltages;
-    let vLeadII = allLeads[1].voltages;
-    let vLeadIII = allLeads[2].voltages;
-    let vLeadAVR = allLeads[3].voltages;
-    let vLeadAVL = allLeads[4].voltages;
-    let vLeadAVF = allLeads[5].voltages;
+    let vLeadI = allLeads[0].voltages = [];
+    let vLeadII = allLeads[1].voltages = [];
+    let vLeadIII = allLeads[2].voltages = [];
+    let vLeadAVR = allLeads[3].voltages = [];
+    let vLeadAVL = allLeads[4].voltages = [];
+    let vLeadAVF = allLeads[5].voltages = [];
 
     phases.forEach((phase) => {
         const vector = phase.getVector();

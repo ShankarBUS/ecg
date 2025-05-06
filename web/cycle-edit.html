@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Cardiac Cycle</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        #main {
+            top: 0px;
+            grid-template-columns: unset;
+        }
+
+        .phase-editor {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: var(--control-corner-radius);
+        }
+
+        .remove-phase-button {
+            align-self: flex-end;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dotted-background"></div>
+    <div class="overlay-background"></div>
+    <div id="smokeBackground" class="nav-smoke-background"></div>
+    <div id="main">
+        <div class="group">
+            <h2>Edit Cardiac Electrical Cycle</h2>
+            <div class="sub-group edit-group">
+                <label for="cycleName">Cycle Name:</label>
+                <input type="text" id="cycleName" name="cycleName" />
+
+                <label for="cycleDuration">Total Duration (ms):</label>
+                <input type="number" id="cycleDuration" name="cycleDuration" />
+
+                <h3>Phases</h3>
+                <button type="button" id="addPhaseButton">(+)</button>
+                <div id="phasesContainer" class="cards-grid"></div>
+                <button type="button" id="saveJsonButton">Save JSON</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="assets/js/CycleEditor.js"></script>
+</body>
+
+</html>

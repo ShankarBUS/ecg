@@ -34,7 +34,7 @@ export function setupLeadVisualization(currentCardiacCycle) {
     selectLead(currentLead);
 
     const leadsContainer = document.getElementById('leadsContainer');
-
+    leadsContainer.innerHTML = '';
     for (var i = 0; i < 6; i++) {
         const leadLabel = document.createElement('div');
         leadLabel.className = 'lead-label';

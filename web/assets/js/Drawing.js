@@ -106,7 +106,7 @@ export function drawECGWave(ecgCanvas, ecgPoints) {
     ctx.closePath();
 }
 
-function drawArrow(ctx, startX, startY, endX, endY, color, lineWidth) {
+export function drawArrow(ctx, startX, startY, endX, endY, color, lineWidth) {
     const headLength = 10;
     const angle = Math.atan2(endY - startY, endX - startX);
 

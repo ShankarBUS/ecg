@@ -26,6 +26,10 @@
         .remove-phase-button {
             align-self: flex-end;
         }
+
+        .heart-image {
+            width: 320px;
+        }
     </style>
 </head>
 
@@ -36,6 +40,8 @@
     <div id="main">
         <div class="group">
             <h2>Edit Cardiac Electrical Cycle</h2>
+            <input type="file" id="loadJsonInput" accept="application/json" />
+
             <div class="sub-group edit-group">
                 <label for="cycleName">Cycle Name:</label>
                 <input type="text" id="cycleName" name="cycleName" />

@@ -1,4 +1,4 @@
-import { Point } from './Math.js';
+import { Vector } from './Math.js';
 import { getLimbLead } from './Measurement.js';
 
 const heartCanvas = document.getElementById('heartCanvas');
@@ -59,13 +59,24 @@ export function drawPhaseVectorInHeart(phase, leadIndex) {
     const ctx = heartCanvas.getContext('2d');
     ctx.clearRect(0, 0, heartSize, heartSize);
 
+    // Co-ordinate Axes and Lead Axis Vector
     drawAxes(ctx, leadIndex);
 
+    // Phase Vector
     if (!phase.startPoint || !phase.endPoint || phase.type === 'flat') return;
     let sp = phase.startPoint;
     let ep = phase.endPoint;
 
     drawArrow(ctx, sp.x, sp.y, ep.x, ep.y, vectorColor, 2);
+
+    // Projection Vector (of Phase on Lead)
+    const lead = getLimbLead(leadIndex);
+    const leadAngle = lead.axis * Math.PI / 180;
+    const leadVector = new Vector(Math.cos(leadAngle), Math.sin(leadAngle));
+    const phaseVector = new Vector(ep.x - sp.x, ep.y - sp.y);
+    const dot = phaseVector.dot(leadVector);
+    drawArrow(ctx, heartSize / 2, heartSize / 2,
+        (heartSize / 2) + dot * (leadVector.x), (heartSize/2) + (dot * leadVector.y), 'green', 2);
 }
 
 export function drawECGWave(ecgCanvas, ecgPoints) {

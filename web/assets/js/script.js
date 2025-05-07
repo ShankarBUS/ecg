@@ -1,6 +1,6 @@
 import { defineLimbElectrodes, defineLimbLeads } from './Measurement.js';
 import { handleWidthChange } from './Drawing.js';
-import { CardiacElectricalCycle } from './CardiacCycle.js';
+import { CardiacElectricalCycle } from './models/CardiacElectricalCycle.js';
 import { enableStickyHeader, enableHamburgerMenu, setupMessagePopup, showMessagePopup } from 'https://shankarbus.github.io/kaadu-ui/kaadu-ui.js';
 import { setupLeadVisualization } from './LeadVisualization.js';
 import { updateHeart } from './Slider.js';

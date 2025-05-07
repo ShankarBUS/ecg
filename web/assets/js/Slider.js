@@ -70,7 +70,7 @@ export function updateHeart() {
     let phase = currentCycle.phases.find(phase => phase.startTime <= time && phase.startTime + phase.duration >= time);
     if (phase) {
         drawPhaseVectorInHeart(phase, currentLead);
-        moveHeartPointer(phase, time);
+        //moveHeartPointer(phase, time);
     }
 }
 

@@ -4,12 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Cardiac Cycle</title>
+    <title>Edit Cardiac Activity</title>
     <link rel="stylesheet" href="assets/css/styles.css">
     <style>
         #main {
             top: 0px;
             grid-template-columns: unset;
+        }
+
+        .cycle-editor {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: var(--control-corner-radius);
         }
 
         .phase-editor {
@@ -23,7 +34,7 @@
             border-radius: var(--control-corner-radius);
         }
 
-        .remove-phase-button {
+        .remove-button {
             align-self: flex-end;
         }
 
@@ -39,24 +50,24 @@
     <div id="smokeBackground" class="nav-smoke-background"></div>
     <div id="main">
         <div class="group">
-            <h2>Edit Cardiac Electrical Cycle</h2>
+            <h2>Edit Cardiac Activity</h2>
             <input type="file" id="loadJsonInput" accept="application/json" />
 
             <div class="sub-group edit-group">
-                <label for="cycleName">Cycle Name:</label>
-                <input type="text" id="cycleName" name="cycleName" />
+                <label for="activityName">Activity Name:</label>
+                <input type="text" id="activityName" name="activityName" />
 
-                <label for="cycleDuration">Total Duration (ms):</label>
-                <input type="number" id="cycleDuration" name="cycleDuration" />
+                <label for="activityDuration">Total Duration (ms):</label>
+                <input type="number" id="activityDuration" name="activityDuration" />
 
-                <h3>Phases</h3>
-                <button type="button" id="addPhaseButton">(+)</button>
-                <div id="phasesContainer" class="cards-grid"></div>
+                <h3>Cycles</h3>
+                <button type="button" id="addCycleButton" title="Add a New Cycle">(+)</button>
+                <div id="cyclesContainer" class="cards-grid"></div>
                 <button type="button" id="saveJsonButton">Save JSON</button>
             </div>
         </div>
     </div>
-    <script type="module" src="assets/js/CycleEditor.js"></script>
+    <script type="module" src="assets/js/Editor.js"></script>
 </body>
 
 </html>

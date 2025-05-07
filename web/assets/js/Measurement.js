@@ -149,19 +149,19 @@ export function generateECGPoints(lead, width, height) {
         let amplitude = lead[index] * amplitudeFactor;
         let duration = phase.duration * scaleX;
         let y = centerY - amplitude;
-        if (phase.type === 'smooth') {
+        //if (phase.type === 'smooth') {
             for (let x = 0; x < duration; x++) {
                 y = centerY - amplitude * Math.sin((Math.PI * x) / (duration));
                 points.push({ x: currentX + x, y });
             }
-        } else if (phase.type === 'spike') {
-            points.push({ x: currentX + duration, y: y });
-        }
-        else {
-            points.push({ x: currentX, y: prevY });
-            points.push({ x: currentX + (duration / 4), y: y });
-            points.push({ x: currentX + duration, y: y });
-        }
+        // } else if (phase.type === 'spike') {
+        //     points.push({ x: currentX + duration, y: y });
+        // }
+        // else {
+        //     points.push({ x: currentX, y: prevY });
+        //     points.push({ x: currentX + (duration / 4), y: y });
+        //     points.push({ x: currentX + duration, y: y });
+        // }
         prevY = y;
     });
 

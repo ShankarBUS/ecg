@@ -1,12 +1,13 @@
-import { Vector } from './Math.js';
+import { Vector3 } from './Math.js';
 import { getLimbLead } from './Measurement.js';
 
 const heartCanvas = document.getElementById('heartCanvas');
 let heartSize = 320; // default heartCanvas size
-let ecgColor = 'red';
+let ecgColor = 'black';
 let vectorColor = 'dodgerblue';
 let axisColor = 'red';
 let gridColor = 'rgba(100, 100, 100, 0.5)';
+let ecgGridColor = 'rgba(255, 55, 98, 0.5)';
 
 export function setCanvasDPI(canvas, width, height, r = 1, set2dTransform = true) {
     const ratio = Math.ceil(window.devicePixelRatio);
@@ -72,49 +73,11 @@ export function drawPhaseVectorInHeart(phase, leadIndex) {
     // Projection Vector (of Phase on Lead)
     const lead = getLimbLead(leadIndex);
     const leadAngle = lead.axis * Math.PI / 180;
-    const leadVector = new Vector(Math.cos(leadAngle), Math.sin(leadAngle));
-    const phaseVector = new Vector(ep.x - sp.x, ep.y - sp.y);
+    const leadVector = new Vector3(Math.cos(leadAngle), Math.sin(leadAngle), 0);
+    const phaseVector = new Vector3(ep.x - sp.x, ep.y - sp.y, ep.z - sp.z);
     const dot = phaseVector.dot(leadVector);
     drawArrow(ctx, heartSize / 2, heartSize / 2,
-        (heartSize / 2) + dot * (leadVector.x), (heartSize/2) + (dot * leadVector.y), 'green', 2);
-}
-
-export function drawECGWave(ecgCanvas, ecgPoints) {
-    if (!ecgCanvas || !ecgPoints) return;
-    const ecgWidth = ecgCanvas.width;
-    const ecgHeight = ecgCanvas.height;
-
-    let ctx = ecgCanvas.getContext('2d');
-    ctx.clearRect(0, 0, ecgCanvas.width, ecgCanvas.height);
-    ctx.beginPath();
-    ctx.lineWidth = 1;
-
-    for (var x = 0; x <= ecgWidth; x += 20) {
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, ecgHeight);
-    }
-
-    for (var y = 0; y <= ecgHeight; y += 20) {
-        ctx.moveTo(0, y);
-        ctx.lineTo(ecgWidth, y);
-    }
-
-    ctx.strokeStyle = gridColor;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ecgPoints.forEach((point, index) => {
-        if (index === 0) {
-            ctx.moveTo(point.x, point.y);
-        } else {
-            ctx.lineTo(point.x, point.y);
-        }
-    });
-
-    ctx.strokeStyle = ecgColor;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.closePath();
+        (heartSize / 2) + dot * (leadVector.x), (heartSize / 2) + (dot * leadVector.y), 'green', 2);
 }
 
 export function drawArrow(ctx, startX, startY, endX, endY, color, lineWidth) {
@@ -160,4 +123,110 @@ export function handleWidthChange(width, init = false) {
         handled = true;
     }
     return handled;
+}
+
+// Standard: 25mm = 200px, so 1mm = 8px
+const mmPerPx = 8; // 1mm = 8px
+const smallBox = mmPerPx; // 1mm
+const largeBox = smallBox * 5; // 5mm = 40px
+const pxPerSecond = 25 * mmPerPx; // 25mm/s
+const pxPerMv = 10 * mmPerPx; // 10mm/mV
+
+// Time is in ms
+export function scaleTimeToPixels(time) {
+    return time / 1000 * pxPerSecond;
+}
+
+// Voltage is in mV
+// 1mV = 10mm = 80px
+export function scaleVoltageToPixels(voltage) {
+    return voltage * pxPerMv;
+}
+
+// This ensures a full large box always fits within the calculated width
+// Minimum width is 200px
+export function getECGCanvasWidthForTime(time) {
+    const width = scaleTimeToPixels(time) + 50; // 50px for the labels
+    const correctedWidth = Math.ceil(width / largeBox) * largeBox;
+    return correctedWidth < 200 ? 200 : correctedWidth;
+}
+
+export function drawECGGrid(ctx, ecgWidth, ecgHeight) {
+    ctx.clearRect(0, 0, ecgWidth, ecgHeight);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, ecgWidth, ecgHeight);
+
+    // Draw small boxes (light lines)
+    ctx.beginPath();
+    for (let x = 0; x <= ecgWidth; x += smallBox) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, ecgHeight);
+    }
+    for (let y = 0; y <= ecgHeight; y += smallBox) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(ecgWidth, y);
+    }
+    ctx.strokeStyle = ecgGridColor;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+    ctx.closePath();
+
+    // Draw large boxes (darker lines)
+    ctx.beginPath();
+    for (let x = 0; x <= ecgWidth; x += largeBox) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, ecgHeight);
+    }
+    for (let y = 0; y <= ecgHeight; y += largeBox) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(ecgWidth, y);
+    }
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.closePath();
+
+    // Draw unit scales (time and voltage)
+    ctx.save();
+    ctx.font = '10px Cascadia Code';
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    // Time scale (horizontal, every large box)
+    for (let x = largeBox; x < ecgWidth; x += largeBox) {
+        const sec = (x / pxPerSecond).toFixed(2);
+        ctx.fillText(`${sec}s`, x + 2, ecgHeight);
+    }
+    // Voltage scale (vertical, every large box)
+    ctx.textAlign = 'right';
+    for (let y = largeBox; y < ecgHeight; y += largeBox) {
+        const mv = ((ecgHeight * 0.6 - y) / pxPerMv).toFixed(2);
+        ctx.fillText(`${mv}mV`, ecgWidth - 2, y + 2);
+    }
+    ctx.restore();
+}
+
+export function drawECGWave(ecgCanvas, ecgPoints) {
+    if (!ecgCanvas || !ecgPoints) return;
+    const ecgWidth = ecgCanvas.width;
+    const ecgHeight = ecgCanvas.height;
+
+    let ctx = ecgCanvas.getContext('2d');
+    ctx.clearRect(0, 0, ecgCanvas.width, ecgCanvas.height);
+
+    // Draw ECG grid
+    drawECGGrid(ctx, ecgWidth, ecgHeight);
+
+    // --- ECG Wave Drawing ---
+    ctx.beginPath();
+    ecgPoints.forEach((point, index) => {
+        if (index === 0) {
+            ctx.moveTo(point.x, point.y);
+        } else {
+            ctx.lineTo(point.x, point.y);
+        }
+    });
+    ctx.strokeStyle = ecgColor;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.closePath();
 }

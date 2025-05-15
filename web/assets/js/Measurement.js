@@ -1,5 +1,6 @@
-import { Vector } from './Math.js';
+import { Vector3 } from './Math.js';
 import { createLimbElectrodeElement } from './LeadVisualization.js';
+import { scaleTimeToPixels, scaleVoltageToPixels } from './Drawing.js';
 
 export class Electrode {
     constructor(name, shortName, x, y) {
@@ -7,7 +8,7 @@ export class Electrode {
         this.shortName = shortName;
         this.x = x;
         this.y = y;
-        this.unitVector = new Vector(x, y).normalize();
+        this.unitVector = new Vector3(x, y, 0).normalize();
     }
 
     voltage = 0;
@@ -136,18 +137,16 @@ export function generateLeadsPoints(currentCardiacCycle, width, height) {
 
 export function generateECGPoints(lead, width, height) {
     const phases = currentCycle.phases;
-    const scaleX = width / currentCycle.duration;
     const centerY = height * 0.6;
-    const amplitudeFactor = height / 2;
 
     let currentX = 0;
     let prevY = 0;
     const points = [];
 
     phases.forEach((phase, index) => {
-        currentX = phase.startTime * scaleX;
-        let amplitude = lead[index] * amplitudeFactor;
-        let duration = phase.duration * scaleX;
+        currentX = scaleTimeToPixels(phase.startTime);
+        let amplitude = scaleVoltageToPixels(lead[index]);
+        let duration = scaleTimeToPixels(phase.duration);
         let y = centerY - amplitude;
         //if (phase.type === 'smooth') {
             for (let x = 0; x < duration; x++) {
@@ -166,4 +165,9 @@ export function generateECGPoints(lead, width, height) {
     });
 
     return points;
+}
+
+// Convert duration of a cycle in milliseconds to heart rate in beats per minute
+export function durationToBeatsPerMinute(duration) {
+    return Math.round(60000 / duration);
 }

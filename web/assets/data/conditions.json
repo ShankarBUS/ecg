@@ -1,16 +1,5 @@
 {
     "conditions": [
-        { "id": "NRML", "name": "Normal" },
-        { "id": "BRDY", "name": "Sinus Bradycardia" },
-        { "id": "TCHY", "name": "Sinus Tachycardia" },
-        { "id": "AFIB", "name": "Atrial Fibrillation" },
-        { "id": "AFLT", "name": "Atrial Flutter" },
-        { "id": "VT", "name": "Ventricular Tachycardia" },
-        { "id": "VF", "name": "Ventricular Fibrillation" },
-        { "id": "PAC", "name": "Premature Atrial Contraction" },
-        { "id": "PVC", "name": "Premature Ventricular Contraction" },
-        { "id": "SVT", "name": "Supraventricular Tachycardia" },
-        { "id": "AVRT", "name": "Atrioventricular Reentrant Tachycardia" },
-        { "id": "AVNRT", "name": "Atrioventricular Nodal Reentrant Tachycardia" }
+        { "id": "NRML", "name": "Normal" }
     ]
 }

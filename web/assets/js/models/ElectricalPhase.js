@@ -1,4 +1,4 @@
-import { Vector } from '../Math.js';
+import { Vector3 } from '../Math.js';
 
 /**
  * Represents an electrical phase in the cardiac cycle.
@@ -43,8 +43,8 @@ export class ElectricalPhase {
      * @returns {Vector} The vector representing the direction and magnitude of the phase.
      */
     getVector() {
-        if (!this.endPoint || !this.startPoint) return new Vector(0, 0);
-        return new Vector(this.endPoint.x - this.startPoint.x, this.endPoint.y - this.startPoint.y)
-            .normalize().multiply(this.multiplier);
+        if (!this.endPoint || !this.startPoint) return new Vector3(0, 0, 0);
+        return new Vector3(this.endPoint.x - this.startPoint.x, this.endPoint.y - this.startPoint.y,
+            this.endPoint.z - this.startPoint.z).normalize().multiply(this.multiplier);
     }
 }

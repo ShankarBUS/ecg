@@ -1,9 +1,8 @@
 import { getLeadPoints, generateLeadsPoints, getLimbLead } from "./Measurement.js";
 import { changeSliderLead, setupECGSlider } from "./Slider.js";
-import { drawECGWave, setCanvasDPI } from "./Drawing.js";
+import { drawECGWave, getECGCanvasWidthForTime, scaleTimeToPixels, setCanvasDPI } from "./Drawing.js";
 import { createKeyValueTable } from 'https://shankarbus.github.io/kaadu-ui/kaadu-ui.js';
 
-let ecgWidth = 200;
 let ecgHeight = 200;
 let currentLead = 1;
 
@@ -29,8 +28,10 @@ export function selectLead(leadIndex) {
 }
 
 export function setupLeadVisualization(currentCardiacCycle) {
-    generateLeadsPoints(currentCardiacCycle, ecgWidth, ecgHeight);
-    setupECGSlider(currentCardiacCycle, ecgWidth, ecgHeight);
+    const width = getECGCanvasWidthForTime(currentCardiacCycle.duration);
+    const sliderWidth = scaleTimeToPixels(currentCardiacCycle.duration);
+    generateLeadsPoints(currentCardiacCycle, width, ecgHeight);
+    setupECGSlider(currentCardiacCycle, width, ecgHeight, sliderWidth);
     selectLead(currentLead);
 
     const leadsContainer = document.getElementById('leadsContainer');
@@ -42,7 +43,7 @@ export function setupLeadVisualization(currentCardiacCycle) {
 
         const leadCanvas = document.createElement('canvas');
         leadCanvas.id = `leadCanvas${i}`;
-        setCanvasDPI(leadCanvas, ecgWidth, ecgHeight);
+        setCanvasDPI(leadCanvas, width, ecgHeight);
         let ecgPoints = getLeadPoints(i);
         drawECGWave(leadCanvas, ecgPoints);
 

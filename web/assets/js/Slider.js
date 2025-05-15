@@ -5,7 +5,7 @@ import { Point } from './Math.js';
 let currentPhase = 0;
 let ecgPoints = null;
 let currentLead = 0;
-let ecgWidth = 0;
+let _sliderWidth = 0;
 
 const ecgSlider = document.getElementById('ecgSlider');
 const ecgPointer = document.getElementById('ecgPointer');
@@ -15,11 +15,11 @@ const heartPointer = document.getElementById('heartPointer');
 
 let currentCycle = null;
 
-export function setupECGSlider(currentCardiacCycle, width, height) {
+export function setupECGSlider(currentCardiacCycle, width, height, sliderWidth) {
     currentCycle = currentCardiacCycle;
     setCanvasDPI(ecgCanvas, width, height);
-    ecgWidth = width;
-    ecgSlider.style.width = `${width}px`;
+    _sliderWidth = sliderWidth;
+    ecgSlider.style.width = `${sliderWidth}px`;
     ecgSlider.style.height = `${height}px`;
     ecgSlider.min = 0;
     ecgSlider.max = currentCycle.duration;
@@ -36,7 +36,7 @@ export function changeSliderLead(leadIndex) {
 }
 
 function moveECGPointer() {
-    const x = ecgSlider.value / ecgSlider.max * ecgWidth;
+    const x = ecgSlider.value / ecgSlider.max * _sliderWidth;
     const y = getYValueFromSlider(x);
     ecgPointer.style.left = `${x - 5}px`;
     ecgPointer.style.top = `${y - 5}px`;

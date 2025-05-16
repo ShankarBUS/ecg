@@ -1,13 +1,24 @@
 import { Vector3 } from './Math.js';
-import { getLimbLead } from './Measurement.js';
+import { getLeadPoints, getLimbLead } from './Measurement.js';
 
 const heartCanvas = document.getElementById('heartCanvas');
 let heartSize = 320; // default heartCanvas size
-let ecgColor = 'black';
+
+let isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+// #region Colors
+
+let ecgColor_dark = 'rgba(0, 255, 64, 1)';
+let ecgColor_light = 'black';
+
+let ecgGridColor_dark = 'rgba(0, 225, 255, 0.5)';
+let ecgGridColor_light = 'rgba(255, 55, 98, 0.5)';
+
 let vectorColor = 'dodgerblue';
 let axisColor = 'red';
 let gridColor = 'rgba(100, 100, 100, 0.5)';
-let ecgGridColor = 'rgba(255, 55, 98, 0.5)';
+
+// #endregion
 
 export function setCanvasDPI(canvas, width, height, r = 1, set2dTransform = true) {
     const ratio = Math.ceil(window.devicePixelRatio);
@@ -152,10 +163,6 @@ export function getECGCanvasWidthForTime(time) {
 }
 
 export function drawECGGrid(ctx, ecgWidth, ecgHeight) {
-    ctx.clearRect(0, 0, ecgWidth, ecgHeight);
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, ecgWidth, ecgHeight);
-
     // Draw small boxes (light lines)
     ctx.beginPath();
     for (let x = 0; x <= ecgWidth; x += smallBox) {
@@ -166,7 +173,8 @@ export function drawECGGrid(ctx, ecgWidth, ecgHeight) {
         ctx.moveTo(0, y);
         ctx.lineTo(ecgWidth, y);
     }
-    ctx.strokeStyle = ecgGridColor;
+
+    ctx.strokeStyle = isDarkTheme ? ecgGridColor_dark : ecgGridColor_light;
     ctx.lineWidth = 0.5;
     ctx.stroke();
     ctx.closePath();
@@ -188,7 +196,7 @@ export function drawECGGrid(ctx, ecgWidth, ecgHeight) {
     // Draw unit scales (time and voltage)
     ctx.save();
     ctx.font = '10px Cascadia Code';
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = isDarkTheme ? ecgColor_dark : ecgColor_light;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
     // Time scale (horizontal, every large box)
@@ -205,28 +213,52 @@ export function drawECGGrid(ctx, ecgWidth, ecgHeight) {
     ctx.restore();
 }
 
-export function drawECGWave(ecgCanvas, ecgPoints) {
-    if (!ecgCanvas || !ecgPoints) return;
+export function drawECGWave(ecgCanvas, leadIndex = 0, time = null) {
+    if (!ecgCanvas) return;
+
+    const ecgPoints = getLeadPoints(leadIndex);
     const ecgWidth = ecgCanvas.width;
     const ecgHeight = ecgCanvas.height;
 
     let ctx = ecgCanvas.getContext('2d');
     ctx.clearRect(0, 0, ecgCanvas.width, ecgCanvas.height);
 
-    // Draw ECG grid
     drawECGGrid(ctx, ecgWidth, ecgHeight);
 
-    // --- ECG Wave Drawing ---
     ctx.beginPath();
-    ecgPoints.forEach((point, index) => {
-        if (index === 0) {
-            ctx.moveTo(point.x, point.y);
-        } else {
-            ctx.lineTo(point.x, point.y);
-        }
-    });
-    ctx.strokeStyle = ecgColor;
+    for (let i = 0; i < ecgPoints.length; i++) {
+        const point = ecgPoints[i];
+
+        if (time && point.x > scaleTimeToPixels(time)) break; // Stop drawing if the point is beyond the current time
+
+        if (i === 0) ctx.moveTo(point.x, point.y);
+        else ctx.lineTo(point.x, point.y);
+    }
+
+    ctx.strokeStyle = isDarkTheme ? ecgColor_dark : ecgColor_light;
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.closePath();
+
+    ctx.font = '12px Cascadia Code';
+    ctx.fillStyle = isDarkTheme ? ecgColor_dark : ecgColor_light;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    var leadName = getLimbLead(leadIndex).name;
+    ctx.fillText(leadName, 10, 10);
 }
+
+const darkThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+function handleThemeChange(event) {
+    isDarkTheme = event.matches;
+    var ecgCanvases = document.getElementsByClassName('ecg-canvas');
+    for (let i = 0; i < ecgCanvases.length; i++) {
+        const ecgCanvas = ecgCanvases[i];
+        const leadIndex = parseInt(ecgCanvas.name);
+        drawECGWave(ecgCanvas, leadIndex);
+    }
+}
+
+// Add listener for changes
+darkThemeMediaQuery.addEventListener('change', handleThemeChange);

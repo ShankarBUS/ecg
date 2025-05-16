@@ -1,10 +1,11 @@
-import { getLeadPoints, generateLeadsPoints, getLimbLead } from "./Measurement.js";
+import { generateLeadsPoints, getLimbLead, getLimbLeads, durationToBeatsPerMinute } from "./Measurement.js";
 import { changeSliderLead, setupECGSlider } from "./Slider.js";
 import { drawECGWave, getECGCanvasWidthForTime, scaleTimeToPixels, setCanvasDPI } from "./Drawing.js";
 import { createKeyValueTable } from 'https://shankarbus.github.io/kaadu-ui/kaadu-ui.js';
 
 let ecgHeight = 200;
 let currentLead = 1;
+let allLeads = [];
 
 const leadDetailsContainer = document.getElementById('leadDetailsContainer');
 export function selectLead(leadIndex) {
@@ -28,38 +29,77 @@ export function selectLead(leadIndex) {
 }
 
 export function setupLeadVisualization(currentCardiacCycle) {
+    displayECGDetails(currentCardiacCycle);
     const width = getECGCanvasWidthForTime(currentCardiacCycle.duration);
     const sliderWidth = scaleTimeToPixels(currentCardiacCycle.duration);
     generateLeadsPoints(currentCardiacCycle, width, ecgHeight);
     setupECGSlider(currentCardiacCycle, width, ecgHeight, sliderWidth);
-    selectLead(currentLead);
+
+    allLeads = getLimbLeads();
+    const leadCMB = document.getElementById('leadCMB');
+    var leadOptions = [];
 
     const leadsContainer = document.getElementById('leadsContainer');
     leadsContainer.innerHTML = '';
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < allLeads.length; i++) {
         const leadLabel = document.createElement('div');
         leadLabel.className = 'lead-label';
         leadLabel.innerText = getLimbLead(i).name;
+        leadOptions.push({
+            value: i.toString(),
+            label: getLimbLead(i).name
+        });
 
         const leadCanvas = document.createElement('canvas');
         leadCanvas.id = `leadCanvas${i}`;
+        leadCanvas.className = 'ecg-canvas';
+        leadCanvas.name = i.toString();
         setCanvasDPI(leadCanvas, width, ecgHeight);
-        let ecgPoints = getLeadPoints(i);
-        drawECGWave(leadCanvas, ecgPoints);
+        drawECGWave(leadCanvas, i, 0);
 
-        const card = document.createElement('div');
-        card.className = 'card ecg-card';
-
-        card.appendChild(leadLabel);
-        card.appendChild(leadCanvas);
-
-        const leadIndex = i;
-        card.addEventListener('click', () => {
-            selectLead(leadIndex);
-        });
-
-        leadsContainer.appendChild(card);
+        leadsContainer.appendChild(leadCanvas);
     }
+
+    leadCMB.loadOptions(leadOptions);
+    leadCMB.addEventListener('selectionChanged',
+        () => selectLead(leadCMB.selectedItem.value));
+    leadCMB.setSelectedItem(currentLead.toString());
+    selectLead(currentLead);
+}
+
+export function updateECGWavesInAllLeads(time) {
+    for (let i = 0; i < allLeads.length; i++) {
+        const ecgCanvas = document.getElementById(`leadCanvas${i}`);
+        if (!ecgCanvas) continue;
+        drawECGWave(ecgCanvas, i, time);
+    }
+}
+
+let bpmText = null;
+let timeText = null;
+let phaseText = null;
+const ecgDetailsContainer = document.getElementById('ecgDetailsContainer');
+export function displayECGDetails(cycle, phase = null, time = null) {
+    if (!bpmText) {
+        bpmText = document.createElement('p');
+        ecgDetailsContainer.appendChild(bpmText);
+    }
+    if (!timeText) {
+        timeText = document.createElement('p');
+        ecgDetailsContainer.appendChild(timeText);
+    }
+    if (!phaseText) {
+        phaseText = document.createElement('p');
+        ecgDetailsContainer.appendChild(phaseText);
+    }
+
+    if (!cycle) return;
+    if (!phase) phase = cycle.phases[0];
+    if (!time) time = 0;
+
+    bpmText.innerText = `HR: ${durationToBeatsPerMinute(cycle.duration)}/min |`;
+    timeText.innerText = `Time: ${time}ms/${cycle.duration}ms |`;
+    phaseText.innerText = `Phase: ${phase.name}`;
 }
 
 const electrodesContainer = document.getElementById('electrodesContainer');
@@ -97,3 +137,9 @@ function displayLimbElectrodes(positiveElectrode, negativeElectrodes) {
         }
     }
 }
+
+const monitorEffectCB = document.getElementById('monitorEffectCB');
+const leadsGroup = document.getElementById('leadsGroup');
+monitorEffectCB.addEventListener('click', () => {
+    leadsGroup.classList.toggle('monitor-effect', monitorEffectCB.checked);
+});

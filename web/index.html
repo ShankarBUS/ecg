@@ -22,7 +22,7 @@
         <nav id="navBar" class="navbar">
             <ul id="navList" class="navlist">
                 <li><a href="#heart-visual">Heart Visual</a></li>
-                <li><a href="#leads">Leads</a></li>
+                <li><a href="#ecg-visualizer">ECG Visualizer</a></li>
             </ul>
         </nav>
     </header>
@@ -33,6 +33,8 @@
                 <div class="sub-group">
                     <label for="conditionCMB">Select Condition</label>
                     <combo-box id="conditionCMB"></combo-box>
+                    <label for="leadCMB">Select Lead</label>
+                    <combo-box id="leadCMB"></combo-box>
                     <p>Drag the ECG Slider.</p>
                     <div class="controller-container">
                         <div class="slider-container">
@@ -52,10 +54,21 @@
             </div>
         </div>
         <div class="column column-2">
-            <div class="group">
-                <h2 id="leads">Leads</h2>
-                <div class="sub-group">
-                    <div id="leadsContainer" class="cards-grid"></div>
+            <div id="leadsGroup" class="group">
+                <h2 id="ecg-visualizer">ECG Visualizer</h2>
+                <div class="sub-group ecg-group">
+                    <div id="ecgDetailsContainer" class="ecg-details">
+                        <label for="monitorEffectCB">Monitor Effect</label>
+                        <input type="checkbox" id="monitorEffectCB" />
+                    </div>
+                    <div id="leadsContainer" class="leads-container"></div>
+                    <div class="crt">
+                        <svg width="0" height="0">
+                            <filter id="sharpen">
+                                <feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="-1 0 0 0 4 0 0 0 -1" />
+                            </filter>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>

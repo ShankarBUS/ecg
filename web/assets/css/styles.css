@@ -1,5 +1,19 @@
 @import url('https://shankarbus.github.io/kaadu-ui/kaadu-ui.css');
 
+:root {
+    --ecg-color: red;
+    --lead-container-color: white;
+    --crt-background: linear-gradient(rgba(255, 254, 254, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ecg-color: #00e1ff;
+        --lead-container-color: #111;
+        --crt-background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    }
+}
+
 @media (min-width: 1024px) {
     #main {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -45,7 +59,7 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: red;
+    background-color: var(--ecg-color);
     transition: none;
 }
 
@@ -67,7 +81,7 @@
     appearance: none;
     width: 15px;
     height: 200px;
-    background: linear-gradient(to right, #ff000000, #ff0000, #ff000000);
+    background: linear-gradient(to right, transparent, var(--ecg-color), transparent);
     cursor: pointer;
 }
 
@@ -163,6 +177,53 @@
     max-width: unset;
 }
 
-.ecg-card {
+.ecg-group {
+    gap: 0px;
+    position: relative;
+    border: 1px solid var(--ecg-color);
+    transition: none;
+}
+
+.ecg-details {
+    padding: 8px;
+    background: var(--ecg-color);
+    color: var(--alt-text-color);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.leads-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
+}
+
+.crt {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: var(--crt-background);
+    background-size: 100% 2px, 3px 100%;
+    backdrop-filter: blur(0.5px) url(#sharpen);
+    pointer-events: none;
+}
+
+.monitor-effect .crt {
+    display: block;
+}
+
+.monitor-effect .ecg-group {
+    background-color: var(--lead-container-color);
+    border: 4px inset #ccc;
 }

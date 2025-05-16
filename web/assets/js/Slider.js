@@ -1,8 +1,9 @@
 import { getLeadPoints } from './Measurement.js';
 import { setCanvasDPI, drawPhaseVectorInHeart, drawECGWave } from './Drawing.js';
 import { Point } from './Math.js';
+import { displayECGDetails, updateECGWavesInAllLeads } from './LeadVisualization.js';
 
-let currentPhase = 0;
+let currentPhase = null;
 let ecgPoints = null;
 let currentLead = 0;
 let _sliderWidth = 0;
@@ -17,6 +18,7 @@ let currentCycle = null;
 
 export function setupECGSlider(currentCardiacCycle, width, height, sliderWidth) {
     currentCycle = currentCardiacCycle;
+    currentPhase = currentCycle.phases[0];
     setCanvasDPI(ecgCanvas, width, height);
     _sliderWidth = sliderWidth;
     ecgSlider.style.width = `${sliderWidth}px`;
@@ -30,9 +32,10 @@ export function setupECGSlider(currentCardiacCycle, width, height, sliderWidth) 
 export function changeSliderLead(leadIndex) {
     currentLead = leadIndex;
     ecgPoints = getLeadPoints(leadIndex);
-    drawECGWave(ecgCanvas, ecgPoints);
+    ecgCanvas.name = leadIndex.toString();
+    drawECGWave(ecgCanvas, leadIndex);
     moveECGPointer();
-    updateHeart();
+    updateHeart(currentPhase);
 }
 
 function moveECGPointer() {
@@ -60,15 +63,16 @@ function getYValueFromSlider(x) {
 }
 
 function updateECGPhase() {
-    currentPhase = ecgSlider.value;
+    const time = ecgSlider.value;
     moveECGPointer();
-    updateHeart();
+    currentPhase = currentCycle.phases.find(phase => phase.startTime <= time && phase.startTime + phase.duration >= time);
+    updateHeart(currentPhase);
+    updateECGWavesInAllLeads(time);
+    displayECGDetails(currentCycle, currentPhase, time);
 }
 
-export function updateHeart() {
-    const time = currentPhase;
-    let phase = currentCycle.phases.find(phase => phase.startTime <= time && phase.startTime + phase.duration >= time);
-    if (phase) {
+export function updateHeart(phase) {
+   if (phase) {
         drawPhaseVectorInHeart(phase, currentLead);
         //moveHeartPointer(phase, time);
     }
@@ -85,7 +89,7 @@ function moveHeartPointer(phase, time) {
     );
 
     let ratio = window.innerWidth >= 400 ? 1 : 0.625;
-    let left = cep.x * ratio ;
+    let left = cep.x * ratio;
     let top = cep.y * ratio;
 
     heartPointer.style.left = `${left - 20}px`;

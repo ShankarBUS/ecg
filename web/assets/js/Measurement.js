@@ -61,14 +61,18 @@ export function defineLimbLeads() {
     const la = limbElectrodes[1];
     const ll = limbElectrodes[2];
 
-    const leadI = new Lead('Lead I', 0, 0, la, [ra]);
-    const leadII = new Lead('Lead II', 1, 60, ll, [ra]);
-    const leadIII = new Lead('Lead III', 2, 120, ll, [la]);
-    const leadAVR = new Lead('Lead aVR', 3, -150, ra, [la, ll]);
-    const leadAVL = new Lead('Lead aVL', 4, -30, la, [ra, ll]);
-    const leadAVF = new Lead('Lead aVF', 5, 90, ll, [ra, la]);
+    const leadI = new Lead('I', 0, 0, la, [ra]);
+    const leadII = new Lead('II', 1, 60, ll, [ra]);
+    const leadIII = new Lead('III', 2, 120, ll, [la]);
+    const leadAVR = new Lead('aVR', 3, -150, ra, [la, ll]);
+    const leadAVL = new Lead('aVL', 4, -30, la, [ra, ll]);
+    const leadAVF = new Lead('aVF', 5, 90, ll, [ra, la]);
 
     allLeads = [leadI, leadII, leadIII, leadAVR, leadAVL, leadAVF];
+}
+
+export function getLimbLeads() {
+    return allLeads;
 }
 
 export function getLimbLead(index) {
@@ -149,10 +153,11 @@ export function generateECGPoints(lead, width, height) {
         let duration = scaleTimeToPixels(phase.duration);
         let y = centerY - amplitude;
         //if (phase.type === 'smooth') {
-            for (let x = 0; x < duration; x++) {
+        for (let x = 0; x < duration; x++) {
+            if (phase.type !== 'flat')
                 y = centerY - amplitude * Math.sin((Math.PI * x) / (duration));
-                points.push({ x: currentX + x, y });
-            }
+            points.push({ x: currentX + x, y });
+        }
         // } else if (phase.type === 'spike') {
         //     points.push({ x: currentX + duration, y: y });
         // }

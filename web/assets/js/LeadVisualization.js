@@ -137,9 +137,3 @@ function displayLimbElectrodes(positiveElectrode, negativeElectrodes) {
         }
     }
 }
-
-const monitorEffectCB = document.getElementById('monitorEffectCB');
-const leadsGroup = document.getElementById('leadsGroup');
-monitorEffectCB.addEventListener('click', () => {
-    leadsGroup.classList.toggle('monitor-effect', monitorEffectCB.checked);
-});

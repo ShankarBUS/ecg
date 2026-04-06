@@ -1,5 +1,5 @@
 import { ElectricalPhase } from './ElectricalPhase.js';
-import { Point } from '../Math.js';
+import { ElectricalPath } from './ElectricalPath.js';
 
 /**
  * Represents a single cardiac electrical cycle.
@@ -63,11 +63,10 @@ export class CardiacElectricalCycle {
     static fromJson(json) {
         let cycle = Object.assign(new CardiacElectricalCycle(), json);
         cycle.phases = json.phases.map(phase => {
-            if (phase.startPoint) {
-                phase.startPoint = new Point(phase.startPoint.x, phase.startPoint.y);
-            }
-            if (phase.endPoint) {
-                phase.endPoint = new Point(phase.endPoint.x, phase.endPoint.y);
+            if (phase.paths) {
+                phase.paths = phase.paths.map(str => {
+                    return ElectricalPath.fromString(str);
+                });
             }
             return Object.assign(new ElectricalPhase(), phase);
         });

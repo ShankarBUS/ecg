@@ -1,5 +1,6 @@
 {
     "conditions": [
-        { "id": "NRML", "name": "Normal" }
+        { "id": "NRML", "name": "Normal" },
+        { "id": "TEST", "name": "Test Condition" }
     ]
 }

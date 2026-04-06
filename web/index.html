@@ -19,61 +19,79 @@
             <div></div>
         </button>
         <label>ECG</label>
-        <nav id="navBar" class="navbar">
+        <!-- <nav id="navBar" class="navbar">
             <ul id="navList" class="navlist">
                 <li><a href="#heart-visual">Heart Visual</a></li>
                 <li><a href="#ecg-visualizer">ECG Visualizer</a></li>
             </ul>
-        </nav>
+        </nav> -->
     </header>
     <div id="main">
         <div class="column">
             <div class="group">
-                <h2 id="heart-visual">Heart Visual</h2>
+                <h2 id="config">Configuration</h2>
                 <div class="sub-group">
                     <label for="conditionCMB">Select Condition</label>
                     <combo-box id="conditionCMB"></combo-box>
                     <label for="leadCMB">Select Lead</label>
                     <combo-box id="leadCMB"></combo-box>
                     <p>Drag the ECG Slider.</p>
-                    <div class="controller-container">
+                    <div id="leadDetailsContainer"></div>
+                </div>
+            </div>
+        </div>
+        <div class="column column-2">
+            <div class="group">
+                <h2 id="visualizer">Visualizer</h2>
+                <div class="controller-container">
                         <div class="slider-container">
                             <canvas id="ecgWaveCanvas" class="ecg-canvas canvas"></canvas>
                             <div id="ecgPointer" class="ecg-pointer"></div>
                             <input type="range" id="ecgSlider" class="ecg-slider" />
                         </div>
-                        <div class="heart-container">
-                            <img id="heartImage" class="heart-image" src="./assets/svgs/heart.svg" />
-                            <canvas id="heartCanvas" class="heart-canvas canvas"></canvas>
-                            <div id="electrodesContainer" class="electrodes-container"></div>
-                            <!-- <div id="heartPointer" class="heart-pointer"></div> -->
+                    </div>
+                <div class="view-switcher-container">
+                    <div class="segments" role="tablist" aria-label="Visualizer views">
+                        <button class="segment active" data-view="heart-view" aria-pressed="true">Heart</button>
+                        <button class="segment" data-view="ecg-view" aria-pressed="false">ECG</button>
+                    </div>
+                    <div class="views-container">
+                        <div class="view heart-view active">
+                            <div class="heart-container">
+                                <img id="heartImage" class="heart-image" src="./assets/svgs/heart.svg" />
+                                <canvas id="heartCanvas" class="heart-canvas canvas"></canvas>
+                                <div id="electrodesContainer" class="electrodes-container"></div>
+                            </div>
                         </div>
-                        <div id="leadDetailsContainer"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="column column-2">
-            <div id="leadsGroup" class="group">
-                <h2 id="ecg-visualizer">ECG Visualizer</h2>
-                <div class="sub-group ecg-group">
-                    <div id="ecgDetailsContainer" class="ecg-details">
-                        <label for="monitorEffectCB">Monitor Effect</label>
-                        <input type="checkbox" id="monitorEffectCB" />
-                    </div>
-                    <div id="leadsContainer" class="leads-container"></div>
-                    <div class="crt">
-                        <svg width="0" height="0">
-                            <filter id="sharpen">
-                                <feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="-1 0 0 0 4 0 0 0 -1" />
-                            </filter>
-                        </svg>
+                        <div class="view ecg-view">
+                            <div class="sub-group ecg-group">
+                                <div id="ecgDetailsContainer" class="ecg-details">
+                                </div>
+                                <div id="leadsContainer" class="leads-container"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <script type="module" src="https://shankarbus.github.io/kaadu-ui/combo-box.js"></script>
+    <script>
+        (function(){
+            const segments = document.querySelectorAll('.segment');
+            const views = document.querySelectorAll('.view');
+            function activate(viewName, button){
+                views.forEach(v=> v.classList.toggle('active', v.classList.contains(viewName)));
+                segments.forEach(s=>{
+                    const active = s.dataset.view === viewName;
+                    s.classList.toggle('active', active);
+                    s.setAttribute('aria-pressed', active ? 'true' : 'false');
+                });
+                if(button) button.focus();
+            }
+            segments.forEach(s=> s.addEventListener('click', ()=> activate(s.dataset.view, s)));
+        })();
+    </script>
     <script type="module" src="assets/js/script.js"></script>
 </body>
 

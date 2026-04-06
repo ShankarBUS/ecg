@@ -1,10 +1,11 @@
 import { defineLimbElectrodes, defineLimbLeads } from './Measurement.js';
 import { handleWidthChange } from './Drawing.js';
-import { CardiacElectricalCycle } from './models/CardiacElectricalCycle.js';
 import { enableStickyHeader, enableHamburgerMenu, setupMessagePopup, showMessagePopup } from 'https://shankarbus.github.io/kaadu-ui/kaadu-ui.js';
 import { setupLeadVisualization } from './LeadVisualization.js';
 import { updateHeart } from './Slider.js';
+import { CardiacActivity } from './models/CardiacActivity.js';
 
+let currentCardiacActivity = null;
 let currentCardiacCycle = null;
 
 async function initApp() {
@@ -52,18 +53,20 @@ async function loadConditions() {
 }
 
 async function selectCondition(id) {
-    currentCardiacCycle = await loadCycleFromCondition(id);
-    if (currentCardiacCycle)
+    currentCardiacActivity = await loadActivityFromCondition(id);
+    if (currentCardiacActivity && currentCardiacActivity.cycles.length > 0) {
+        currentCardiacCycle = currentCardiacActivity.cycles[0];
         setupLeadVisualization(currentCardiacCycle);
+    }
 }
 
-async function loadCycleFromCondition(id) {
+async function loadActivityFromCondition(id) {
     try {
-        const response = await fetch(`./assets/data/cycle-${id}.json`);
+        const response = await fetch(`./assets/data/activity-${id}.json`);
         const data = await response.json();
-        return CardiacElectricalCycle.fromJson(data);
+        return CardiacActivity.fromJson(data);
     } catch (error) {
-        console.error('Error loading cycle from condition:', error);
+        console.error('Error loading activity from condition:', error);
         return null;
     }
 }

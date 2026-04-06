@@ -3,14 +3,12 @@
 :root {
     --ecg-color: red;
     --lead-container-color: white;
-    --crt-background: linear-gradient(rgba(255, 254, 254, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
         --ecg-color: #00e1ff;
         --lead-container-color: #111;
-        --crt-background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
     }
 }
 
@@ -90,6 +88,7 @@
     height: 100px;
     background: transparent;
     cursor: pointer;
+    border: none;
 }
 
 .heart-container {
@@ -206,24 +205,52 @@
     align-items: flex-start;
 }
 
-.crt {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: var(--crt-background);
-    background-size: 100% 2px, 3px 100%;
-    backdrop-filter: blur(0.5px) url(#sharpen);
-    pointer-events: none;
+/* Segmented control and view switcher styles */
+.view-switcher-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
 }
 
-.monitor-effect .crt {
+.segments {
+    display: inline-flex;
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 4px;
+    gap: 4px;
+    align-self: center;
+}
+
+.segment {
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: inherit;
+    font-weight: 600;
+}
+
+.segment.active {
+    background: var(--focus-color);
+    color: var(--alt-text-color, #fff);
+}
+
+.views-container {
+    width: 100%;
+}
+
+.view {
+    display: none;
+}
+
+.view.active {
     display: block;
 }
 
-.monitor-effect .ecg-group {
-    background-color: var(--lead-container-color);
-    border: 4px inset #ccc;
+@media (min-width: 900px) {
+    .view-switcher-container { gap: 12px; }
+    .segment { padding: 8px 16px; }
 }

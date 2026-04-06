@@ -50,4 +50,11 @@ export class CardiacActivity {
         this.cycles.push(cycle);
         this.duration += cycle.duration; // Update total duration
     }
+
+    static fromJson(json) {
+        const cycles = json.cycles.map(cycleJson => CardiacElectricalCycle.fromJson(cycleJson));
+        const activity = new CardiacActivity(json.name, json.duration, cycles);
+        activity.description = json.description || '';
+        return activity;
+    }
 }

@@ -81,13 +81,20 @@ function setupVectorEditorPopup() {
 function onMouseDown(event) {
     const { x, y } = getMousePos(event);
     draggingPoint = getPointAt(x, y);
-    if (!draggingPoint && points.length < 2) {
+    var rightClick = event.button === 2;
+    if (!draggingPoint && !rightClick) {
         points.push({ x, y });
         drawPoints();
         updateVectors();
     }
-    else if (draggingPoint) {
+    else if (draggingPoint && !rightClick) {
         vectorCanvas.style.cursor = 'move';
+    }
+    else if (draggingPoint && rightClick) {
+        points = points.filter(p => p !== draggingPoint);
+        draggingPoint = null;
+        drawPoints();
+        updateVectors();
     }
 }
 
@@ -123,16 +130,19 @@ function drawPoints() {
     ctx.clearRect(0, 0, vectorCanvas.width, vectorCanvas.height);
 
     points.forEach(point => {
-        // Draw the grid
-        ctx.beginPath();
-        ctx.moveTo(point.x, 0);
-        ctx.lineTo(point.x, vectorCanvas.height);
-        ctx.moveTo(0, point.y);
-        ctx.lineTo(vectorCanvas.width, point.y);
-        ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        ctx.closePath();
+
+        if (point === draggingPoint) {
+            // Draw the grid
+            ctx.beginPath();
+            ctx.moveTo(point.x, 0);
+            ctx.lineTo(point.x, vectorCanvas.height);
+            ctx.moveTo(0, point.y);
+            ctx.lineTo(vectorCanvas.width, point.y);
+            ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.closePath();
+        }
 
         // Draw the point
         ctx.fillStyle = 'red';
@@ -150,9 +160,13 @@ function drawPoints() {
         ctx.font = '14px Cascadia Code';
         ctx.fillText(`(${draggingPoint.x}, ${draggingPoint.y})`, 10, 10);
     }
-    if (points.length === 2) {
-        const [sp, ep] = points;
-        drawArrow(ctx, sp.x, sp.y, ep.x, ep.y, 'dodgerblue', 2);
+
+    if (points.length >= 2) {
+        for (let i = 0; i < points.length - 1; i += 2) {
+            const a = points[i];
+            const b = points[i + 1];
+            drawArrow(ctx, a.x, a.y, b.x, b.y, 'dodgerblue', 2);
+        }
     }
 }
 
@@ -168,28 +182,27 @@ function closeVectorEditorPopup() {
 function showVectorEditorPopup(phaseDiv) {
     currentPhaseDiv = phaseDiv;
     popup.setAttribute('aria-hidden', 'false');
-    const startPointX = parseFloat(phaseDiv.querySelector('[name="startPointX"]').value);
-    const startPointY = parseFloat(phaseDiv.querySelector('[name="startPointY"]').value);
-    const endPointX = parseFloat(phaseDiv.querySelector('[name="endPointX"]').value);
-    const endPointY = parseFloat(phaseDiv.querySelector('[name="endPointY"]').value);
-    if (isNaN(startPointX) || isNaN(startPointY) || isNaN(endPointX) || isNaN(endPointY)) {
-        points = [];
-    } else {
-        points = [
-            { x: startPointX, y: startPointY },
-            { x: endPointX, y: endPointY }
-        ];
+    const pathsField = phaseDiv.querySelector('[name="pathsData"]');
+    points = [];
+    if (pathsField && pathsField.value) {
+        try {
+            const parsed = JSON.parse(pathsField.value);
+            if (Array.isArray(parsed)) points = parsed.map(p => ({ x: Number(p.x) || 0, y: Number(p.y) || 0 }));
+        } catch (e) {
+            points = [];
+        }
     }
     drawPoints();
 }
 
 function updateVectors() {
-    if (points.length === 2) {
-        const [sp, ep] = points;
-        currentPhaseDiv.querySelector('[name="startPointX"]').value = sp.x.toFixed(2);
-        currentPhaseDiv.querySelector('[name="startPointY"]').value = sp.y.toFixed(2);
-        currentPhaseDiv.querySelector('[name="endPointX"]').value = ep.x.toFixed(2);
-        currentPhaseDiv.querySelector('[name="endPointY"]').value = ep.y.toFixed(2);
+    // Store the points array in the hidden pathsData field as JSON
+    if (!currentPhaseDiv) return;
+    const pathsField = currentPhaseDiv.querySelector('[name="pathsData"]');
+    if (pathsField) {
+        pathsField.value = JSON.stringify(points.map(p => ({ x: Number(p.x) || 0, y: Number(p.y) || 0 })));
+        const summary = currentPhaseDiv.querySelector('.points-count');
+        if (summary) summary.textContent = `Points: ${points.length}`;
     }
 }
 
@@ -236,10 +249,35 @@ function addPhaseEditor(phasesContainer, phaseData = null) {
         showVectorEditorPopup(phaseDiv);
     });
 
-    createLabelInputPair(phaseDiv, 'Start Point X:', 'number', 'startPointX', phaseData ? phaseData.startPoint?.x : null);
-    createLabelInputPair(phaseDiv, 'Start Point Y:', 'number', 'startPointY', phaseData ? phaseData.startPoint?.y : null);
-    createLabelInputPair(phaseDiv, 'End Point X:', 'number', 'endPointX', phaseData ? phaseData.endPoint?.x : null);
-    createLabelInputPair(phaseDiv, 'End Point Y:', 'number', 'endPointY', phaseData ? phaseData.endPoint?.y : null);
+    // Hidden storage for multiple vector points (as JSON array of {x,y}).
+    const pathsInput = document.createElement('input');
+    pathsInput.type = 'hidden';
+    pathsInput.name = 'pathsData';
+    // visible summary of number of points
+    const pointsSummary = document.createElement('span');
+    // populate from phaseData.paths or fallback to start/end points
+    let initialPoints = [];
+    if (phaseData && phaseData.paths && Array.isArray(phaseData.paths) && phaseData.paths.length > 0) {
+        // phaseData.paths may be array of strings like "sx,sy,ex,ey" or objects
+        try {
+            const parsed = phaseData.paths.map(p => {
+                if (typeof p === 'string') {
+                    const parts = p.split(',').map(Number);
+                    return { x: parts[0], y: parts[1], endX: parts[2], endY: parts[3] };
+                }
+                return p;
+            });
+            parsed.forEach(p => initialPoints.push({ x: p.x, y: p.y }, { x: p.endX, y: p.endY }));
+        } catch (e) {
+            initialPoints = [];
+        }
+    } else if (phaseData && phaseData.startPoint && phaseData.endPoint) {
+        initialPoints = [{ x: phaseData.startPoint.x, y: phaseData.startPoint.y }, { x: phaseData.endPoint.x, y: phaseData.endPoint.y }];
+    }
+    pathsInput.value = JSON.stringify(initialPoints || []);
+    pointsSummary.textContent = `Points: ${(initialPoints || []).length}`;
+    phaseDiv.appendChild(pathsInput);
+    phaseDiv.appendChild(pointsSummary);
     createLabelInputPair(phaseDiv, 'Name in Lead II:', 'text', 'nameInLead2', phaseData ? phaseData.nameInLead2 : '');
 
     const typeLabel = document.createElement('label');
@@ -311,27 +349,34 @@ function getPhaseData(phaseDiv) {
     let name = phaseDiv.querySelector('[name="phaseName"]').value;
     let startTime = parseInt(phaseDiv.querySelector('[name="startTime"]').value, 10);
     let duration = parseInt(phaseDiv.querySelector('[name="duration"]').value, 10);
-    let startPointX = parseFloat(phaseDiv.querySelector('[name="startPointX"]').value);
-    let startPointY = parseFloat(phaseDiv.querySelector('[name="startPointY"]').value);
-    let endPointX = parseFloat(phaseDiv.querySelector('[name="endPointX"]').value);
-    let endPointY = parseFloat(phaseDiv.querySelector('[name="endPointY"]').value);
     let nameInLead2 = phaseDiv.querySelector('[name="nameInLead2"]').value;
     let typeCMB = phaseDiv.querySelector('combo-box.combo-box');
     let type = typeCMB && typeCMB.selectedItem ? typeCMB.selectedItem.value : 'flat';
     let multiplier = parseFloat(phaseDiv.querySelector('[name="multiplier"]').value);
 
+    // Read points from hidden pathsData and convert into array of path strings "sx,sy,ex,ey"
+    const pathsField = phaseDiv.querySelector('[name="pathsData"]');
+    let paths = [];
+    if (pathsField && pathsField.value) {
+        try {
+            const parsed = JSON.parse(pathsField.value);
+            if (Array.isArray(parsed) && parsed.length >= 2) {
+                for (let i = 0; i < parsed.length - 1; i += 2) {
+                    const a = parsed[i];
+                    const b = parsed[i + 1];
+                    paths.push(`${Number(a.x) || 0},${Number(a.y) || 0},${Number(b.x) || 0},${Number(b.y) || 0}`);
+                }
+            }
+        } catch (e) {
+            paths = [];
+        }
+    }
+
     return {
         name: name,
         startTime: startTime,
         duration: duration,
-        startPoint: {
-            x: startPointX,
-            y: startPointY
-        },
-        endPoint: {
-            x: endPointX,
-            y: endPointY
-        },
+        paths: paths,
         nameInLead2: nameInLead2,
         type: type,
         multiplier: multiplier

@@ -74,18 +74,19 @@ export function drawPhaseVectorInHeart(phase, leadIndex) {
     // Co-ordinate Axes and Lead Axis Vector
     drawAxes(ctx, leadIndex);
 
-    // Phase Vector
-    if (!phase.startPoint || !phase.endPoint || phase.type === 'flat') return;
-    let sp = phase.startPoint;
-    let ep = phase.endPoint;
+    if (!phase.paths || phase.paths.length === 0 || phase.type === 'flat') return;
 
-    drawArrow(ctx, sp.x, sp.y, ep.x, ep.y, vectorColor, 2);
+    phase.paths.forEach(path => {
+        const sp = { x: path.startX, y: path.startY };
+        const ep = { x: path.endX, y: path.endY };
+        drawArrow(ctx, sp.x, sp.y, ep.x, ep.y, vectorColor, 2);
+    });
+    const phaseVector = phase.getVector(false);
 
     // Projection Vector (of Phase on Lead)
     const lead = getLimbLead(leadIndex);
     const leadAngle = lead.axis * Math.PI / 180;
     const leadVector = new Vector3(Math.cos(leadAngle), Math.sin(leadAngle), 0);
-    const phaseVector = new Vector3(ep.x - sp.x, ep.y - sp.y, ep.z - sp.z);
     const dot = phaseVector.dot(leadVector);
     drawArrow(ctx, heartSize / 2, heartSize / 2,
         (heartSize / 2) + dot * (leadVector.x), (heartSize / 2) + (dot * leadVector.y), 'green', 2);

@@ -62,8 +62,8 @@ function getYValueFromSlider(x) {
     return prevPoint.y + slope * (x - prevPoint.x);
 }
 
-export function updateECGPhase(time = null) {
-    if (!time) time = ecgSlider.value;
+export function updateECGPhase() {
+    const time = ecgSlider.value;
     moveECGPointer();
     currentPhase = currentCycle.phases.find(phase => phase.startTime <= time && phase.startTime + phase.duration >= time);
     updateHeart(currentPhase, time);

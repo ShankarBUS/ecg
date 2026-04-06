@@ -112,7 +112,7 @@ function animate(timestamp) {
     const cycleDurationMs = currentCardiacCycle.duration / speed;
     const sliderValue = (elapsed / cycleDurationMs) * parseFloat(ecgSlider.max);
     ecgSlider.value = sliderValue;
-    updateECGPhase(sliderValue);
+    updateECGPhase();
 
     if (elapsed < cycleDurationMs) {
         animationFrameId = requestAnimationFrame(animate);

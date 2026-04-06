@@ -76,21 +76,21 @@ export function updateECGWavesInAllLeads(time) {
 }
 
 let bpmText = null;
-let timeText = null;
 let phaseText = null;
+let timeText = null;
 const ecgDetailsContainer = document.getElementById('ecgDetailsContainer');
 export function displayECGDetails(cycle, phase = null, time = null) {
     if (!bpmText) {
         bpmText = document.createElement('p');
         ecgDetailsContainer.appendChild(bpmText);
     }
-    if (!timeText) {
-        timeText = document.createElement('p');
-        ecgDetailsContainer.appendChild(timeText);
-    }
     if (!phaseText) {
         phaseText = document.createElement('p');
         ecgDetailsContainer.appendChild(phaseText);
+    }
+    if (!timeText) {
+        timeText = document.createElement('p');
+        ecgDetailsContainer.appendChild(timeText);
     }
 
     if (!cycle) return;
@@ -98,8 +98,8 @@ export function displayECGDetails(cycle, phase = null, time = null) {
     if (!time) time = 0;
 
     bpmText.innerText = `HR: ${durationToBeatsPerMinute(cycle.duration)}/min |`;
-    timeText.innerText = `Time: ${time}ms/${cycle.duration}ms |`;
     phaseText.innerText = `Phase: ${phase.name}`;
+    timeText.innerText = `Time: ${time}ms/${cycle.duration}ms |`;
 }
 
 const electrodesContainer = document.getElementById('electrodesContainer');

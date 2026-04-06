@@ -44,12 +44,18 @@
             <div class="group">
                 <h2 id="visualizer">Visualizer</h2>
                 <div class="controller-container">
-                        <div class="slider-container">
-                            <canvas id="ecgWaveCanvas" class="ecg-canvas canvas"></canvas>
-                            <div id="ecgPointer" class="ecg-pointer"></div>
-                            <input type="range" id="ecgSlider" class="ecg-slider" />
-                        </div>
+                    <div class="slider-container">
+                        <canvas id="ecgWaveCanvas" class="ecg-canvas canvas"></canvas>
+                        <div id="ecgPointer" class="ecg-pointer"></div>
+                        <input type="range" id="ecgSlider" class="ecg-slider" />
                     </div>
+                    <div class="playback-controls">
+                        <button id="playPauseBtn" class="play-pause-btn">Play</button>
+                        <input type="number" id="speedInput" class="speed-input" value="1" min="0.1" max="10" step="0.1" />
+                        <input type="checkbox" id="loopToggle" class="loop-toggle" />
+                        <label for="loopToggle">Loop</label>
+                    </div>
+                </div>
                 <div class="view-switcher-container">
                     <div class="segments" role="tablist" aria-label="Visualizer views">
                         <button class="segment active" data-view="heart-view" aria-pressed="true">Heart</button>
@@ -77,19 +83,19 @@
     </div>
     <script type="module" src="https://shankarbus.github.io/kaadu-ui/combo-box.js"></script>
     <script>
-        (function(){
+        (function () {
             const segments = document.querySelectorAll('.segment');
             const views = document.querySelectorAll('.view');
-            function activate(viewName, button){
-                views.forEach(v=> v.classList.toggle('active', v.classList.contains(viewName)));
-                segments.forEach(s=>{
+            function activate(viewName, button) {
+                views.forEach(v => v.classList.toggle('active', v.classList.contains(viewName)));
+                segments.forEach(s => {
                     const active = s.dataset.view === viewName;
                     s.classList.toggle('active', active);
                     s.setAttribute('aria-pressed', active ? 'true' : 'false');
                 });
-                if(button) button.focus();
+                if (button) button.focus();
             }
-            segments.forEach(s=> s.addEventListener('click', ()=> activate(s.dataset.view, s)));
+            segments.forEach(s => s.addEventListener('click', () => activate(s.dataset.view, s)));
         })();
     </script>
     <script type="module" src="assets/js/script.js"></script>

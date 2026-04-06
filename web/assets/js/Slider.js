@@ -62,36 +62,17 @@ function getYValueFromSlider(x) {
     return prevPoint.y + slope * (x - prevPoint.x);
 }
 
-function updateECGPhase() {
-    const time = ecgSlider.value;
+export function updateECGPhase(time = null) {
+    if (!time) time = ecgSlider.value;
     moveECGPointer();
     currentPhase = currentCycle.phases.find(phase => phase.startTime <= time && phase.startTime + phase.duration >= time);
-    updateHeart(currentPhase);
+    updateHeart(currentPhase, time);
     updateECGWavesInAllLeads(time);
-    displayECGDetails(currentCycle, currentPhase, time);
+    displayECGDetails(currentCycle, currentPhase, Math.round(time));
 }
 
-export function updateHeart(phase) {
-   if (phase) {
-        drawPhaseVectorInHeart(phase, currentLead);
-        //moveHeartPointer(phase, time);
+export function updateHeart(phase, time) {
+    if (phase) {
+        drawPhaseVectorInHeart(phase, currentLead, time);
     }
-}
-
-function moveHeartPointer(phase, time) {
-    let sp = phase.startPoint;
-    let ep = phase.endPoint;
-    if (!sp || !ep) return;
-    const t = (time - phase.startTime) / phase.duration;
-    let cep = new Point(
-        sp.x + (ep.x - sp.x) * t,
-        sp.y + (ep.y - sp.y) * t
-    );
-
-    let ratio = window.innerWidth >= 400 ? 1 : 0.625;
-    let left = cep.x * ratio;
-    let top = cep.y * ratio;
-
-    heartPointer.style.left = `${left - 20}px`;
-    heartPointer.style.top = `${top - 20}px`;
 }

@@ -67,7 +67,7 @@ function drawAxes(ctx, leadIndex) {
     ctx.closePath();
 }
 
-export function drawPhaseVectorInHeart(phase, leadIndex) {
+export function drawPhaseVectorInHeart(phase, leadIndex, time) {
     const ctx = heartCanvas.getContext('2d');
     ctx.clearRect(0, 0, heartSize, heartSize);
 
@@ -79,6 +79,15 @@ export function drawPhaseVectorInHeart(phase, leadIndex) {
     phase.paths.forEach(path => {
         const sp = { x: path.startX, y: path.startY };
         const ep = { x: path.endX, y: path.endY };
+
+        const dt = time - phase.startTime;
+        if (dt < 0) return;
+        const progress = dt / phase.duration;
+        let dx = (ep.x - sp.x) * progress;
+        let dy = (ep.y - sp.y) * progress;
+
+        drawImpulseRing(ctx, sp.x, sp.y, dx, dy);
+
         drawArrow(ctx, sp.x, sp.y, ep.x, ep.y, vectorColor, 2);
     });
     const phaseVector = phase.getVector(false);
@@ -90,6 +99,24 @@ export function drawPhaseVectorInHeart(phase, leadIndex) {
     const dot = phaseVector.dot(leadVector);
     drawArrow(ctx, heartSize / 2, heartSize / 2,
         (heartSize / 2) + dot * (leadVector.x), (heartSize / 2) + (dot * leadVector.y), 'green', 2);
+}
+
+export function drawImpulseRing(ctx, x, y, dx, dy) {
+    ctx.beginPath();
+
+    let r = Math.sqrt(dx * dx + dy * dy);
+    let theta = Math.atan2(dy, dx);
+    let delta = Math.PI / 3;
+    ctx.moveTo(x, y);
+    ctx.arc(x, y, r, theta - delta, theta + delta);
+    ctx.closePath();
+
+    // Create the gradient (from center to slice edge)
+    const grad = ctx.createLinearGradient(x, y, x + dx, y + dy);
+    grad.addColorStop(0.6, '#FFFF0000');   // Color at center
+    grad.addColorStop(1, '#FFFF00');  // Color at edge
+    ctx.fillStyle = grad;
+    ctx.fill();
 }
 
 export function drawArrow(ctx, startX, startY, endX, endY, color, lineWidth) {

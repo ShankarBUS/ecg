@@ -1,0 +1,8 @@
+[
+  {
+      "title": "Home",
+      "path": "docs/home.md",
+      "default": true,
+      "route": "home"
+  }
+]

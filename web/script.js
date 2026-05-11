@@ -1,18 +1,16 @@
-import { defineLimbElectrodes, defineLimbLeads } from './Measurement.js';
-import { handleWidthChange } from './Drawing.js';
-import { enableStickyHeader, enableHamburgerMenu, setupMessagePopup, showMessagePopup } from 'https://shankarbus.github.io/kaadu-ui/kaadu-ui.js';
-import { setupLeadVisualization } from './LeadVisualization.js';
-import { updateECGPhase, updateHeart } from './Slider.js';
-import { CardiacActivity } from './models/CardiacActivity.js';
+import { defineLimbElectrodes, defineLimbLeads } from './js/Measurement.js';
+import { handleWidthChange } from './js/Drawing.js';
+import { enableStickyHeader } from 'https://shankarbus.github.io/kaadu-ui/kaadu-ui.js';
+import { setupLeadVisualization } from './js/LeadVisualization.js';
+import { updateECGPhase, updateHeart } from './js/Slider.js';
+import { CardiacActivity } from './js/models/CardiacActivity.js';
 
 let currentCardiacActivity = null;
 let currentCardiacCycle = null;
 
 async function initApp() {
     enableStickyHeader();
-    enableHamburgerMenu();
-    setupMessagePopup();
-    
+
     defineLimbElectrodes();
     defineLimbLeads();
     handleWidthChange(window.innerWidth, true);
@@ -31,22 +29,11 @@ async function initApp() {
     });
 }
 
-const conditionCMB = document.getElementById('conditionCMB');
-
 async function loadConditions() {
     try {
-        const response = await fetch('./assets/data/conditions.json');
-        const data = await response.json();
-        const options = data.conditions.map(condition => ({
-            value: condition.id,
-            label: condition.name
-        }));
-        conditionCMB.loadOptions(options);
-
-        conditionCMB.addEventListener('selectionChanged',
-             () => selectCondition(conditionCMB.selectedItem.value));
-        conditionCMB.setSelectedItem('NRML'); // Set default value to normal
-        selectCondition(conditionCMB.selectedItem.value);
+        // const response = await fetch('./assets/data/conditions.json');
+        // const data = await response.json();
+        selectCondition('NRML');
     } catch (error) {
         console.error('Error loading conditions:', error);
     }

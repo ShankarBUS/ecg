@@ -36,7 +36,6 @@ export function setupLeadVisualization(currentCardiacCycle) {
     setupECGSlider(currentCardiacCycle, width, ecgHeight, sliderWidth);
 
     allLeads = getLimbLeads();
-    const leadCMB = document.getElementById('leadCMB');
     var leadOptions = [];
 
     const leadsContainer = document.getElementById('leadsContainer');
@@ -60,10 +59,6 @@ export function setupLeadVisualization(currentCardiacCycle) {
         leadsContainer.appendChild(leadCanvas);
     }
 
-    leadCMB.loadOptions(leadOptions);
-    leadCMB.addEventListener('selectionChanged',
-        () => selectLead(leadCMB.selectedItem.value));
-    leadCMB.setSelectedItem(currentLead.toString());
     selectLead(currentLead);
 }
 

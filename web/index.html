@@ -4,101 +4,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ECG</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <title>ECGi - Interactive ECG Learning Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(0,200,180,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,200,180,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-brand {
+            flex-grow: 1;
+        }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+            align-items: center;
+
+            .hero-text {
+                font-size: 3rem;
+                font-weight: 600;
+                text-align: center;
+            }
+
+            .badge {
+                color: var(--c-accent);
+                border-color: var(--c-accent-soft);
+            }
+            .interact {
+                background-color: var(--c-border-strong);
+                color: var(--c-accent);
+            }
+            .learn {
+                font-weight: 200;
+                font-style: italic;
+            }
+
+            .hero-description {
+                &>span {
+                    font-size: var(--fs-2);
+                    color: var(--c-text-soft);
+                }
+            }
+
+            .hero-actions {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: var(--space-2);
+
+                button {
+                    padding: var(--space-4) var(--space-6);
+                }
+
+                .primary {
+                    border-color: var(--c-accent-soft);
+                    background-color: var(--c-accent);
+                    color: var(--c-bg);
+
+                    &:hover {
+                        background-color: var(--c-accent-soft);
+                        color: var(--c-text);
+                    }
+
+                    &:active {
+                        background-color: var(--c-highlight);
+                        color: var(--c-text);
+                    }
+                }
+            }
+        }
+
+        @media (max-width: 1000px)
+        {
+            .hero {
+                .hero-text {
+                    font-size: 2.5rem;
+                }
+            }
+        }
+
+        @media (max-width: 480px)
+        {
+            .hero {
+                .hero-text {
+                    font-size: 2rem;
+                }
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="dotted-background"></div>
-    <div class="overlay-background"></div>
-    <div id="smokeBackground" class="nav-smoke-background"></div>
-    <header id="pageHeader" class="page-header">
-        <button class="hamburger" id="hamburgerMenu">
-            <div></div>
-            <div></div>
-            <div></div>
-        </button>
-        <label>ECG</label>
-        <!-- <nav id="navBar" class="navbar">
-            <ul id="navList" class="navlist">
-                <li><a href="#heart-visual">Heart Visual</a></li>
-                <li><a href="#ecg-visualizer">ECG Visualizer</a></li>
-            </ul>
-        </nav> -->
+    <svg style="display: none;">
+        <symbol id="ic-menu" viewBox="0 0 24 24">
+            <path fill="currentColor"
+                d="M2.75254 17.9997H21.2525C21.6668 17.9997 22.0025 18.3355 22.0025 18.7497C22.0025 19.1294 21.7204 19.4432 21.3543 19.4928L21.2525 19.4997H2.75254C2.33832 19.4997 2.00254 19.1639 2.00254 18.7497C2.00254 18.37 2.28469 18.0562 2.65077 18.0065L2.75254 17.9997H21.2525H2.75254ZM2.75254 11.5027H21.2525C21.6668 11.5027 22.0025 11.8385 22.0025 12.2527C22.0025 12.6324 21.7204 12.9462 21.3543 12.9959L21.2525 13.0027H2.75254C2.33832 13.0027 2.00254 12.6669 2.00254 12.2527C2.00254 11.873 2.28469 11.5592 2.65077 11.5095L2.75254 11.5027H21.2525H2.75254ZM2.75168 5.00293H21.2517C21.6659 5.00293 22.0017 5.33872 22.0017 5.75293C22.0017 6.13263 21.7195 6.44642 21.3535 6.49608L21.2517 6.50293H2.75168C2.33746 6.50293 2.00168 6.16714 2.00168 5.75293C2.00168 5.37323 2.28383 5.05944 2.64991 5.00978L2.75168 5.00293H21.2517H2.75168Z">
+            </path>
+        </symbol>
+        <symbol id="ic-home" viewBox="0 0 16 16">
+            <path fill="currentColor"
+                d="M7.313 1.262a1 1 0 0 1 1.374 0l4.844 4.579c.3.283.469.678.469 1.09v5.57a1.5 1.5 0 0 1-1.5 1.5h-2A1.5 1.5 0 0 1 9 12.5V10a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v2.5A1.5 1.5 0 0 1 5.5 14h-2A1.5 1.5 0 0 1 2 12.5V6.93c0-.412.17-.807.47-1.09zM8 1.988l-4.844 4.58A.5.5 0 0 0 3 6.93v5.57a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5V10a1.5 1.5 0 0 1 1.5-1.5h1A1.5 1.5 0 0 1 10 10v2.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5V6.93a.5.5 0 0 0-.156-.363z" />
+        </symbol>
+        <symbol id="ic-github" viewBox="0 0 98 98">
+            <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"
+                d="M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z">
+            </path>
+        </symbol>
+        <symbol id="ic-learn" viewBox="0 0 20 20">
+            <path fill="currentColor" d="M4 16V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v11a1 1 0 0 1-1 1H5a1 1 0 0 0 1 1h9.5a.5.5 0 0 1 0 1H6a2 2 0 0 1-2-2M15 4a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v11h10zM9.455 6.293a.5.5 0 0 0-.902-.017L7.19 9H6.5a.5.5 0 0 0 0 1h1a.5.5 0 0 0 .447-.276L8.98 7.66l2.066 4.546a.5.5 0 0 0 .884.05L13.283 10h.217a.5.5 0 0 0 0-1H13a.5.5 0 0 0-.429.243l-1.01 1.683z"/>
+        </symbol>
+        <symbol id="ic-interact" viewBox="0 0 20 20">
+            <path fill="currentColor" d="M10.497 16.803L15.253 12H14.25q-.184 0-.36-.044l-3.865 3.902l-3.863-3.902Q5.986 12 5.8 12H4.799l4.755 4.803c.26.263.682.263.942 0m6.227-12.49a4.42 4.42 0 0 1 .978 4.7A2 2 0 0 0 17.5 9h-.889a3.415 3.415 0 0 0-.598-3.984A3.306 3.306 0 0 0 11.3 5l-.951.963a.5.5 0 0 1-.711 0l-.96-.97a3.3 3.3 0 0 0-4.706-.016C2.899 6.061 2.713 7.711 3.42 9H2.5q-.09 0-.18.01a4.4 4.4 0 0 1 .941-4.736a4.3 4.3 0 0 1 6.127.016l.605.61l.596-.603l.109-.106a4.306 4.306 0 0 1 6.026.121M7.962 6.307a.5.5 0 0 0-.922-.004L5.47 10H2.5a.5.5 0 0 0 0 1h3.3a.5.5 0 0 0 .46-.304l1.235-2.907l2.043 4.903a.5.5 0 0 0 .886.073l2.143-3.429l1.307 1.493a.5.5 0 0 0 .376.171h3.25a.5.5 0 0 0 0-1h-3.023l-1.6-1.83a.5.5 0 0 0-.801.065l-1.987 3.179z"/>
+        </symbol>
+    </svg>
+
+    <header id="header">
+        <div class="app-brand">
+            <button id="navMenuBtn" class="icon-button" aria-label="Open navigation">
+                <svg class="icon">
+                    <use href="#ic-menu"></use>
+                </svg>
+            </button>
+            <h3>ECGi</h3>
+        </div>
+        <div class="button-group">
+            <button id="interactBtn" class="icon-button interact-button" title="Interact">
+                <svg class="icon">
+                    <use xlink:href="#ic-interact"></use>
+                </svg>
+            </button>
+            <button id="learnBtn" class="icon-button learn-button" title="Learn">
+                <svg class="icon">
+                    <use xlink:href="#ic-learn"></use>
+                </svg>
+            </button>
+        </div>
+        <div class="button-group">
+            <button id="ghRepoBtn" class="icon-button" title="GitHub Repository">
+                <svg class="icon">
+                    <use xlink:href="#ic-github"></use>
+                </svg>
+            </button>
+            <button id="ghProfileBtn" class="icon-button" title="ShankarBUS">
+                <img class="profile-img" src="https://avatars.githubusercontent.com/ShankarBUS" width="20px"
+                    height="20px">
+            </button>
+        </div>
     </header>
-    <div id="main">
-        <div class="column">
-            <div class="group">
-                <h2 id="config">Configuration</h2>
-                <div class="sub-group">
-                    <label for="conditionCMB">Select Condition</label>
-                    <combo-box id="conditionCMB"></combo-box>
-                    <label for="leadCMB">Select Lead</label>
-                    <combo-box id="leadCMB"></combo-box>
-                    <p>Drag the ECG Slider.</p>
-                    <div id="leadDetailsContainer"></div>
-                </div>
+
+    <main>
+        <div class="hero">
+            <div class="badge">FREE & OPEN SOURCE</div>
+            <div class="hero-text">
+                <span class="interact">INTERACT</span>
+                <span>&</span>
+                <span class="learn">LEARN</span>
+            </div>
+            <div class="hero-description">
+                <span>A free & open source web platform for learning ECG through courses
+                    and interactive visuals with no registration.</span>
+            </div>
+            <div class="hero-actions">
+                <button class="primary interact-button">Interact</button>
+                <button id="learnBtn2" class="learn-button">Learn</button>
             </div>
         </div>
-        <div class="column column-2">
-            <div class="group">
-                <h2 id="visualizer">Visualizer</h2>
-                <div class="controller-container">
-                    <div class="slider-container">
-                        <canvas id="ecgWaveCanvas" class="ecg-canvas canvas"></canvas>
-                        <div id="ecgPointer" class="ecg-pointer"></div>
-                        <input type="range" id="ecgSlider" class="ecg-slider" />
-                    </div>
-                    <div class="playback-controls">
-                        <button id="playPauseBtn" class="play-pause-btn">Play</button>
-                        <input type="number" id="speedInput" class="speed-input" value="1" min="0.1" max="10" step="0.1" />
-                        <input type="checkbox" id="loopToggle" class="loop-toggle" />
-                        <label for="loopToggle">Loop</label>
-                    </div>
-                </div>
-                <div class="view-switcher-container">
-                    <div class="segments" role="tablist" aria-label="Visualizer views">
-                        <button class="segment active" data-view="heart-view" aria-pressed="true">Heart</button>
-                        <button class="segment" data-view="ecg-view" aria-pressed="false">ECG</button>
-                    </div>
-                    <div class="views-container">
-                        <div class="view heart-view active">
-                            <div class="heart-container">
-                                <img id="heartImage" class="heart-image" src="./assets/svgs/heart.svg" />
-                                <canvas id="heartCanvas" class="heart-canvas canvas"></canvas>
-                                <div id="electrodesContainer" class="electrodes-container"></div>
-                            </div>
-                        </div>
-                        <div class="view ecg-view">
-                            <div class="sub-group ecg-group">
-                                <div id="ecgDetailsContainer" class="ecg-details">
-                                </div>
-                                <div id="leadsContainer" class="leads-container"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script type="module" src="https://shankarbus.github.io/kaadu-ui/combo-box.js"></script>
-    <script>
-        (function () {
-            const segments = document.querySelectorAll('.segment');
-            const views = document.querySelectorAll('.view');
-            function activate(viewName, button) {
-                views.forEach(v => v.classList.toggle('active', v.classList.contains(viewName)));
-                segments.forEach(s => {
-                    const active = s.dataset.view === viewName;
-                    s.classList.toggle('active', active);
-                    s.setAttribute('aria-pressed', active ? 'true' : 'false');
-                });
-                if (button) button.focus();
-            }
-            segments.forEach(s => s.addEventListener('click', () => activate(s.dataset.view, s)));
-        })();
-    </script>
-    <script type="module" src="assets/js/script.js"></script>
+    </main>
+
+    <footer>
+        <p>© ShankarBUS</p>
+    </footer>
+
+    <script type="module" src="app.js"></script>
 </body>
 
 </html>

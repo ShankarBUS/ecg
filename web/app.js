@@ -6,15 +6,12 @@ export function isDebug() {
     return /localhost|127\.0\.0\.1|::1/.test(window.location.hostname);
 }
 
-// Workaround for VS Code's Live Server extension,
-// which serves files from the project root instead of the web directory.
-// In development, we need to prefix paths with '/web' to load resources correctly.
-// In production, we can use the paths as they are.
+// Workaround for VS Code's Live Server extension and GitHub Pages hosting
 export function correctUrl(path) {
     if (isDebug()) {
         return '/web' + path;
     } else {
-        return path;
+        return '/ecg' + path;
     }
 }
 
